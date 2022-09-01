@@ -45,12 +45,12 @@ class InputThread(Thread):
 
 def schedule(func: Callable, delay: float, *args, **kwargs):
     """
-    Delay execution of an function
+    Delay execution of a function
     """
     def _f():
         time.sleep(delay)
         func(*args, **kwargs)
-    Thread(target = func, args=args, daemon = True).start()
+    Thread(target = _f, args=(), daemon = True).start()
 
 def main():
     os.chdir(WORKING_DIR)
@@ -78,7 +78,7 @@ def main():
     signal.signal(signal.SIGINT, handler)
 
     while proc.poll() is None:
-        # Handler
+        # Log listening loop
         handleIOLoop(proc.stdin, proc.stdout, input_thread.onInput, event_queue)
 
     proc.stdout.close()
