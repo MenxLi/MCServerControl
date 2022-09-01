@@ -1,5 +1,8 @@
 __pycache__
 _server
+node_modules
+package-lock.json
+package.json
 src/config.json
 .vimrc
 dist
