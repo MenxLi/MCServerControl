@@ -1,16 +1,14 @@
-from collections.abc import Callable
-from typing import IO
+from typing import IO, Callable
 import os, signal, time, json
 from subprocess import Popen, PIPE, STDOUT
 from threading import Thread
 from multiprocessing import Process, Queue
 from .serverLogParser import parseLine
 from .broadcastServer import startServer as startBroadcastServer
-from . import globalVar
 
-globalVar.init()
 THIS_DIR = os.path.dirname(__file__)
 
+# Read configuration
 with open(os.path.join(THIS_DIR, "config.json"), "r") as fp:
     CONF = json.load(fp)
     WORKING_DIR = os.path.abspath(CONF["working_dir"])
@@ -23,6 +21,9 @@ class MCPopen(Popen):
     stdout: IO[bytes]
 
 class InputThread(Thread):
+    """
+    Thread listening to user input from console
+    """
     def __init__(self, mc_proc: MCPopen) -> None:
         """
          - mc_proc: minecraft server process
@@ -56,7 +57,7 @@ def schedule(func: Callable, delay: float, *args, **kwargs):
     def _f():
         time.sleep(delay)
         func(*args, **kwargs)
-    Thread(target = func, args=(), daemon = True).start()
+    Thread(target = func, args=args, daemon = True).start()
 
 def main():
     os.chdir(WORKING_DIR)
@@ -67,7 +68,7 @@ def main():
     input_thread = InputThread(proc)
     input_thread.start()
 
-    # Start broadcast server
+    # Start broadcast server process
     event_queue = Queue()
     broadcast_proc = Process(target=startBroadcastServer, args = (BROADCAST_PORT, event_queue))
     broadcast_proc.start()
@@ -106,11 +107,23 @@ def handleIOLoop(stdin: IO[bytes], stdout: IO[bytes], cmd: Callable, event_queue
 
     line = output.decode("utf-8")
     ev = parseLine(line)
+
+    # print server log to console
     print(ev["log_line"], end = "")
+
+    # broadcast event to other processes
     event_queue.put(ev)
+
+    # Implement reactions based on event type ⬇
+
+    if ev["etype"] == "listplayer":
+        all_players = ev["all_players"]
+        # tell every one who is online when listing players
+        cmd(f"/say Now online:{all_players}")
 
     if ev["etype"] == "login":
         user_name = ev["user_name"]
+        # Welcome and list players when a user login
         def sayWelcome():
             cmd("/title {} title {}".format(
                 user_name, '{"text": "Welcome"}'
@@ -118,15 +131,11 @@ def handleIOLoop(stdin: IO[bytes], stdout: IO[bytes], cmd: Callable, event_queue
             cmd("/list")
         schedule(sayWelcome, 3)
 
-    if ev["etype"] == "listplayer":
-        all_players = ev["all_players"]
-        cmd(f"/say Now online:{all_players}")
-
+    # custom commands (starts with "\")
     if ev["etype"] == "cmd":
         user_name = ev["user_name"]
         if ev["cmd"] =="\\suicide\n":
             cmd(f"/kill {user_name}")
-
 
 if __name__ == "__main__":
     main()

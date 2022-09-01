@@ -209,13 +209,14 @@ def startServer(port: int, event_queue: Queue):
     """
      - log_queue: queue to receive log lines
     """
+    globalVar.init()
     _log("Starting broadcast server on port %s" % port)
     app = Application()
     app.listen(port) 
     tornado.autoreload.add_reload_hook(auto_reload_hook)
     tornado.autoreload.start()
 
-    # Start new thread listening to queue
+    # Start new thread listening to minecraft server event
     Thread(target = updateLog, args = (event_queue, ), daemon=True).start()
 
     try:

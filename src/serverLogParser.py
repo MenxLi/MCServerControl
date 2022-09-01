@@ -1,3 +1,6 @@
+"""
+Parse minecraft server log to events
+"""
 from __future__ import annotations
 import re
 from typing import List, Literal, TypedDict, Union, overload, Any, Type
