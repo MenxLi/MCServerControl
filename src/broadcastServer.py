@@ -1,15 +1,25 @@
 import os, argparse, string, datetime, sys, re
 from typing import Callable, List, Optional
+from multiprocessing import Queue
+from threading import Thread
+from . import globalVar
+from .serverLogParser import EVENT_ALL
 
 import tornado.ioloop
 import tornado.web
 import tornado.autoreload
 
 def readLogLines() -> List[str]:
-    ...
+    return globalVar.log_content
 
 def getLogTime() -> float:
-    ...
+    return globalVar.log_last_update
+
+def updateLog(event_queue: Queue):
+    while True:
+        ev: EVENT_ALL = event_queue.get()
+        globalVar.log_content.append(ev["log_line"])
+        globalVar.log_last_update = ev["time"]
 
 class RequestHandlerBase():
     get_argument: Callable
@@ -168,7 +178,8 @@ class InfoHandler(tornado.web.RequestHandler, RequestHandlerBase):
 
     def get(self, key):
         self.setDefaultHeader()
-        _log(f"Get request: {key} | (ip: {self.request.remote_ip})")
+        if key != "log_time":
+            _log(f"Get request: {key} | (ip: {self.request.remote_ip})")
         if key=="log":
             self.write(self._getLog())
 
@@ -194,12 +205,19 @@ class Application(tornado.web.Application):
 def auto_reload_hook():
     _log("Server is auto-reloading")
 
-def startServer(port: int):
-    _log("Starting server on port %s" % port)
+def startServer(port: int, event_queue: Queue):
+    """
+     - log_queue: queue to receive log lines
+    """
+    _log("Starting broadcast server on port %s" % port)
     app = Application()
     app.listen(port) 
     tornado.autoreload.add_reload_hook(auto_reload_hook)
     tornado.autoreload.start()
+
+    # Start new thread listening to queue
+    Thread(target = updateLog, args = (event_queue, ), daemon=True).start()
+
     try:
         tornado.ioloop.IOLoop.current().start()
     except KeyboardInterrupt:
@@ -207,7 +225,7 @@ def startServer(port: int):
         sys.exit(0)
 
 def _log(txt: str):
-    print(f"{datetime.datetime.now()}: {txt}")
+    print(f"BROADCAST - {datetime.datetime.now()}: {txt}")
 
 if __name__ == "__main__":
     _description = ""

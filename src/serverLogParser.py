@@ -84,12 +84,15 @@ def parseLine(line: str) -> EVENT_ALL:
     if "joined the game" in content:
         event["etype"] = "login"
         event["user_name"] = content.split("joined the game")[0].strip()
+
     elif "left the game" in content:
         event["etype"] = "logout"
         event["user_name"] = content.split("left the game")[0].strip()
+
     elif "There are" in content and "players online:":
         event["etype"] = "listplayer"
         event["all_players"] = content.split("players online:")[1].strip("\n")
+        
     elif re.match(r"\<[^\<]*\>", content):
         match = re.match(r"\<[^\<]*\>", content)
         assert match is not None
