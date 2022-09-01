@@ -15,7 +15,7 @@ if not os.path.exists(CONF_PATH):
         }
         json.dump(_default_conf, fp, indent=1)
     print("Generated default configuration file at: ", CONF_PATH)
-    print("Please edit configuration before running this script")
+    print("Please edit configuration and re-start this script")
     exit()
 
 with open(CONF_PATH, "r") as fp:

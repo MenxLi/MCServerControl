@@ -1,5 +1,6 @@
 __pycache__
 _server
+src/config.json
 .vimrc
 dist
 build
