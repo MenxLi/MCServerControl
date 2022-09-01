@@ -1,5 +1,0 @@
-{
-    "working_dir":"/Users/monsoon/tmp/_server/",
-    "entry":"java -Xmx1024M -Xms1024M -jar server.jar nogui",
-    "broadcast_port": "25566"
-}

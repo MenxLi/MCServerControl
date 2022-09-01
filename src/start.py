@@ -1,19 +1,12 @@
 from typing import IO, Callable
-import os, signal, time, json
+import os, signal, time, random
 from subprocess import Popen, PIPE, STDOUT
 from threading import Thread
 from multiprocessing import Process, Queue
+from .configReader import WORKING_DIR, ENTRY, BROADCAST_PORT
 from .serverLogParser import parseLine
 from .broadcastServer import startServer as startBroadcastServer
 
-THIS_DIR = os.path.dirname(__file__)
-
-# Read configuration
-with open(os.path.join(THIS_DIR, "config.json"), "r") as fp:
-    CONF = json.load(fp)
-    WORKING_DIR = os.path.abspath(CONF["working_dir"])
-    ENTRY = CONF["entry"]
-    BROADCAST_PORT = CONF["broadcast_port"]
 
 class MCPopen(Popen):
     # Type checking purpose
@@ -125,8 +118,9 @@ def handleIOLoop(stdin: IO[bytes], stdout: IO[bytes], cmd: Callable, event_queue
         user_name = ev["user_name"]
         # Welcome and list players when a user login
         def sayWelcome():
+            choices = ["Welcome", "Hello", "Greetings", "こんにちは", "欢迎", "Hola"]
             cmd("/title {} title {}".format(
-                user_name, '{"text": "Welcome"}'
+                user_name, '{"text": "' + random.choice(choices) + '"}'
             ))
             cmd("/list")
         schedule(sayWelcome, 3)
