@@ -10,7 +10,7 @@ class PlayerStatus(TypedDict):
     is_online: bool
     time_login: float
     time_online: float              # Total online time before last logout
-    time_last_warn: float           # Warn player of if they play too long
+    time_last_warn: float           # Warn player if they've been playing too long
 
 class ServerActions:
     def __init__(self, cmd_input: Callable[[str], Any]) -> None:
@@ -22,6 +22,15 @@ class ServerActions:
         # Record player status
         self.player_stats: dict[str, PlayerStatus] = dict()
         self.__startActionLoop()
+
+    def showHelp(self, player_name: str):
+        help_strs = [
+            "suicide",
+            "online-time",
+            "save-world",
+            "help",
+        ]
+        self.cmd("/tell {} Avaliable commands: {}".format(player_name, " | ".join(help_strs)))
 
     @staticmethod
     def schedule(func: Callable, delay: float, *args, **kwargs):
@@ -53,6 +62,7 @@ class ServerActions:
                             self.cmd("/tell {} You have been playing for {} hours, is it too long?".format(
                                 player_name, round(time_since_last_login/3600, 1)
                             ))
+                            player["time_last_warn"] = TimeUtils.nowStamp()
                 time.sleep(LOOP_INTERVAL)
 
         Thread(target=actionSchedule, args = (), daemon=True).start()
