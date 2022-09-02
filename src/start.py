@@ -1,4 +1,4 @@
-from typing import IO, Callable
+from typing import IO, Callable, Any
 import os, signal, time, random
 from subprocess import Popen, PIPE, STDOUT
 from threading import Thread
@@ -6,6 +6,7 @@ from multiprocessing import Process, Queue
 from .configReader import WORKING_DIR, ENTRY, BROADCAST_PORT
 from .serverLogParser import parseLine
 from .broadcastServer import startServer as startBroadcastServer
+from .actions import ServerActions
 
 
 class MCPopen(Popen):
@@ -43,15 +44,6 @@ class InputThread(Thread):
         self.mc_proc.stdin.write(x.encode("utf-8"))
         self.mc_proc.stdin.flush()
 
-def schedule(func: Callable, delay: float, *args, **kwargs):
-    """
-    Delay execution of a function
-    """
-    def _f():
-        time.sleep(delay)
-        func(*args, **kwargs)
-    Thread(target = _f, args=(), daemon = True).start()
-
 def main():
     os.chdir(WORKING_DIR)
 
@@ -79,13 +71,14 @@ def main():
 
     while proc.poll() is None:
         # Log listening loop
-        handleIOLoop(proc.stdin, proc.stdout, input_thread.onInput, event_queue)
+        server_act = ServerActions(input_thread.onInput)
+        handleIOLoop(proc.stdin, proc.stdout, server_act, input_thread.onInput, event_queue)
 
     proc.stdout.close()
     proc.stdin.close()
     exit(proc.poll())
 
-def handleIOLoop(stdin: IO[bytes], stdout: IO[bytes], cmd: Callable, event_queue: Queue):
+def handleIOLoop(stdin: IO[bytes], stdout: IO[bytes], server_act: ServerActions, cmd_input: Callable[[str], Any], event_queue: Queue):
     """
     Implement some reaction based on server stdout
      - stdin: server stdin
@@ -112,24 +105,18 @@ def handleIOLoop(stdin: IO[bytes], stdout: IO[bytes], cmd: Callable, event_queue
     if ev["etype"] == "listplayer":
         all_players = ev["all_players"]
         # tell every one who is online when listing players
-        cmd(f"/say Now online:{all_players}")
+        cmd_input(f"/say Now online:{all_players}")
 
     if ev["etype"] == "login":
         user_name = ev["user_name"]
         # Welcome and list players when a user login
-        def sayWelcome():
-            choices = ["Welcome", "Hello", "Greetings", "こんにちは", "欢迎", "Hola"]
-            cmd("/title {} title {}".format(
-                user_name, '{"text": "' + random.choice(choices) + '"}'
-            ))
-            cmd("/list")
-        schedule(sayWelcome, 3)
+        server_act.action_sayHello(user_name)
 
     # custom commands (starts with "\")
     if ev["etype"] == "cmd":
         user_name = ev["user_name"]
-        if ev["cmd"] =="\\suicide\n":
-            cmd(f"/kill {user_name}")
+        if ev["cmd"][0] =="suicide":
+            server_act.action_killPlayer(user_name)
 
 if __name__ == "__main__":
     main()

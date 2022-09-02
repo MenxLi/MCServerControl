@@ -31,16 +31,16 @@ class EVENT_LOGOUT(_EVENT_BASE):
 class EVENT_CMD(_EVENT_BASE):
     # user command
     user_name: str
-    cmd: str
+    cmd: List[str]
 
-class EVENT_LISTPLYR(_EVENT_BASE):
+class EVENT_LISTPLAYER(_EVENT_BASE):
     all_players: str
 
 class EVENT_ALL(_EVENT_BASE, total = False):
     # All possible entries
     user_name: str
     all_players: str
-    cmd: str
+    cmd: List[str]
 
 
 def splitLogLineBySB(line: str) ->List[str]:
@@ -104,6 +104,7 @@ def parseLine(line: str) -> EVENT_ALL:
         if words.startswith("\\"):
             event["etype"] = "cmd"
             event["user_name"] = user_name
-            event["cmd"] = words
+            cmd_split = words[1:].strip("\n").split(" ")
+            event["cmd"] = cmd_split
 
     return event
