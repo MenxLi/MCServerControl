@@ -69,9 +69,9 @@ def main():
     # Handle interrupt signal
     signal.signal(signal.SIGINT, handler)
 
+    server_act = ServerActions(input_thread.onInput)
     while proc.poll() is None:
         # Log listening loop
-        server_act = ServerActions(input_thread.onInput)
         handleIOLoop(proc.stdin, proc.stdout, server_act, input_thread.onInput, event_queue)
 
     proc.stdout.close()
@@ -109,14 +109,21 @@ def handleIOLoop(stdin: IO[bytes], stdout: IO[bytes], server_act: ServerActions,
 
     if ev["etype"] == "login":
         user_name = ev["user_name"]
-        # Welcome and list players when a user login
-        server_act.action_sayHello(user_name)
+        server_act.action_onLogin(user_name)
+
+    if ev["etype"] == "logout":
+        user_name = ev["user_name"]
+        server_act.action_onLogout(user_name)
 
     # custom commands (starts with "\")
     if ev["etype"] == "cmd":
         user_name = ev["user_name"]
         if ev["cmd"][0] =="suicide":
             server_act.action_killPlayer(user_name)
+        if ev["cmd"][0] =="save-world":
+            server_act.action_saveWorld()
+        if ev["cmd"][0] =="online-time":
+            server_act.action_showPlayTime(user_name)
 
 if __name__ == "__main__":
     main()
