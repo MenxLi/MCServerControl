@@ -92,7 +92,7 @@ def parseLine(line: str) -> EVENT_ALL:
         event["etype"] = "logout"
         event["user_name"] = content.split("left the game")[0].strip()
 
-    elif "There are" in content and "players online:":
+    elif re.match(r"^There are \d* of a max of \d* players online:.*", content):
         event["etype"] = "listplayer"
         event["all_players"] = content.split("players online:")[1].strip("\n")
         
