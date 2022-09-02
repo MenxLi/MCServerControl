@@ -124,7 +124,7 @@ def handleIOLoop(stdin: IO[bytes], stdout: IO[bytes], server_act: ServerActions,
             server_act.action_saveWorld()
         if ev["cmd"][0] =="online-time":
             server_act.action_showPlayTime(user_name)
-        if ev["cmd"][0] =="help" or ev["cmd"] == "?":
+        if ev["cmd"][0] =="help" or ev["cmd"][0] == "?":
             server_act.showHelp(user_name)
 
 if __name__ == "__main__":
