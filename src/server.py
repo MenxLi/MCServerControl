@@ -2,7 +2,7 @@
 An abstraction of the minecraft server actions
 """
 
-from typing import Any, Callable, Literal, Tuple, Union
+from typing import Any, Callable, Literal, Tuple
 import time, random, os
 from threading import Thread
 from .configReader import config

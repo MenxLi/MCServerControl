@@ -5,18 +5,6 @@ from src.observer import PlayerCommandObserver, PlayerObserver
 from src.timeUtils import TimeUtils
 
 
-class InitObserver(PlayerObserver):
-    """
-    Initializa player when they login
-    You can add your own player status key in here
-
-    ** This is a mandatory Observer to create player objects when they first login ** 
-    """
-
-    def onPlayerLogin(self, player: Player):
-        return super().onPlayerLogin(player)
-
-
 class WelcomeObserver(PlayerObserver):
     """
     Show welcome title after player logged in

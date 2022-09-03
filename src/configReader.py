@@ -31,8 +31,3 @@ if not os.path.exists(CONF_PATH):
 
 with open(CONF_PATH, "r") as fp:
     config: CONF_T = json.load(fp)
-    CONF = config
-    WORKING_DIR = os.path.abspath(CONF["server_dir"])
-    ENTRY = CONF["entry"]
-    BROADCAST_PORT = CONF["broadcast_port"]
-    WORLD_NAME = CONF["world_name"]

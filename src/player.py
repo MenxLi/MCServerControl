@@ -1,7 +1,6 @@
 """
 Abstraction of the player
 """
-from typing import TypedDict, Optional
 from .timeUtils import TimeUtils
 
 class PlayerStatus:

@@ -1,4 +1,4 @@
-from abc import abstractmethod, abstractproperty
+from abc import abstractmethod
 from typing import Any, Callable, Dict, Literal, Tuple, TypedDict, List, Union, IO
 import os, warnings, signal
 from multiprocessing import Process, Queue

@@ -1,9 +1,11 @@
-import os, argparse, string, datetime, sys, re
-from typing import Callable, List, Optional
+import os, string, datetime, sys, re
+from typing import Callable, List, Optional, TYPE_CHECKING
 from multiprocessing import Queue
 from threading import Thread
 from . import globalVar
-from .serverLogParser import EVENT_ALL
+
+if TYPE_CHECKING:
+    from .listenerBase import EVENT_ALL
 
 import tornado.ioloop
 import tornado.web
@@ -228,10 +230,3 @@ def startServer(port: int, event_queue: Queue):
 def _log(txt: str):
     print(f"BROADCAST - {datetime.datetime.now()}: {txt}")
 
-#  if __name__ == "__main__":
-#      _description = ""
-#      parser = argparse.ArgumentParser(description = _description)
-#      parser.add_argument("-p", "--port", type = int, default=25566)
-#      args = parser.parse_args()
-#
-#      startServer(args.port)
