@@ -98,6 +98,7 @@ class EventListenerBase:
         self.input_thread: InputThread
         self.daemon: DaemonObserver
         self.proc: MCPopen
+        self.event_queue: Queue
 
     def register(self, *obs: Union[PlayerObserver, PlayerCommandObserver]):
         for ob in obs:
@@ -112,7 +113,11 @@ class EventListenerBase:
 
     def emit(self, event: EVENT_ALL):
 
+        # print to console
         print(event["log_line"], end="")
+
+        # send to broadcast server
+        self.event_queue.put(event)
 
         if event["etype"] == "general":
             ...
