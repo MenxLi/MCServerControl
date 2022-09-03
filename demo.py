@@ -54,7 +54,6 @@ class CommandOnlineTime(PlayerCommandObserver):
         time_since_last_login = TimeUtils.nowStamp() - player.status.time_login
         time_total = player.status.time_online + time_since_last_login
         to_show = "Time online: {} hours \nTotal since server start: {} hours".format(
-            player.name, 
             round(time_since_last_login/3600, 2), 
             round(time_total/3600, 2)
         )
