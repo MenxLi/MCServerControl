@@ -1,18 +1,19 @@
-
-
+from __future__ import annotations
 import sys
-from typing import Callable, List, Any
+from typing import List, TYPE_CHECKING, Optional
+if TYPE_CHECKING:
+    from .server import Server
 
 __initialized: bool
 log_last_update: float
 log_content: List[str]
-server_cmd_entry: Callable[[str], Any]
+server: Optional[Server]
 
 def init():
     global __initialized
     global log_content
     global log_last_update
-    global server_cmd_entry
+    global server
 
     thismodule = sys.modules[__name__]
     if hasattr(thismodule, "__initialized") and __initialized:
@@ -22,4 +23,4 @@ def init():
 
     log_content = []
     log_last_update = 0
-    server_cmd_entry = lambda x: print("Server action enty not set.")
+    server = None

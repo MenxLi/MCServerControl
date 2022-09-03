@@ -5,6 +5,9 @@ from multiprocessing import Process, Queue
 from subprocess import Popen, PIPE, STDOUT
 from threading import Thread
 
+from mcservercontrol import globalVar
+from mcservercontrol.server import Server
+
 from .configReader import config
 from .player import Player
 from .observer import PlayerObserver, PlayerCommandObserver, DaemonObserver
@@ -91,9 +94,9 @@ class EventListenerBase:
         self.players: Dict[str, Player] = {}
         self.player_observers: List[PlayerObserver] = []
         self.player_command_observers: Dict[str, PlayerCommandObserver] = {}
-        self.daemon = DaemonObserver()
 
         self.input_thread: InputThread
+        self.daemon: DaemonObserver
         self.proc: MCPopen
 
     def register(self, *obs: Union[PlayerObserver, PlayerCommandObserver]):
@@ -146,7 +149,7 @@ class EventListenerBase:
         else:
             return lambda x: warnings.warn("Minecraft command line interface not ready.")
 
-    def startMCServer(self):
+    def startServer(self):
         os.chdir(config["server_dir"])
 
         self.proc = MCPopen(config["entry"].split(" "), stdout = PIPE, stdin = PIPE, stderr = STDOUT)
@@ -154,6 +157,9 @@ class EventListenerBase:
         # Start a thread that listen to user input
         self.input_thread = InputThread(self.proc)
         self.input_thread.start()
+
+        # Save server to global variable to be accessed by observers
+        globalVar.server = Server(self.input_thread.sendServerCommand)
 
         # Start broadcast server process
         self.event_queue = Queue()
@@ -172,7 +178,8 @@ class EventListenerBase:
         # Handle interrupt signal
         signal.signal(signal.SIGINT, handler)
 
-        # Start daemon
+        # Start daemon observer
+        self.daemon = DaemonObserver()
         self.daemon.start()
 
     @abstractmethod

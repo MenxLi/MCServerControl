@@ -1,23 +1,23 @@
-from mcservercontrol import EventListener, Server, getDefaultObservers
+from mcservercontrol import EventListener, getDefaultObservers
 
 
 if __name__ == "__main__":
+    # Have to start the minecraft server before initialize observers
     listener = EventListener()
-    listener.startMCServer()
-    server = Server(listener.cmd_interface)
+    listener.startServer()
 
-    # load predefined observers
-    listener.register(*getDefaultObservers(server))
+    # Load predefined observers
+    listener.register(*getDefaultObservers())
 
     # ======================== Your custom code here =====================
     from demo import WelcomeObserver, GoodbyeObserver, CommandSuicide, CommandOnlineTime
 
     # Add custom observers
     obs = [
-        WelcomeObserver(server),
-        GoodbyeObserver(server),
-        CommandSuicide("suicide", server),
-        CommandOnlineTime("online-time", server)
+        WelcomeObserver(),
+        GoodbyeObserver(),
+        CommandSuicide("suicide"),
+        CommandOnlineTime("online-time")
     ]
 
     # register them to the listener
@@ -25,8 +25,9 @@ if __name__ == "__main__":
 
     # Add another callable observer (with __call__), and register it to be run in daemon loop
     from demo import RemindAddictionCallback
+
     listener.daemon.setObserveInterval(1)       # Maybe change daemon's looping interval
-    remind_addiction_ob = RemindAddictionCallback(server)
+    remind_addiction_ob = RemindAddictionCallback()
     listener.addDaemonCallback(remind_addiction_ob)
 
     # register to the listener
@@ -34,5 +35,5 @@ if __name__ == "__main__":
 
     # ======================== Custom code ends =========================
 
-
+    # Start listening loop
     listener.listen()

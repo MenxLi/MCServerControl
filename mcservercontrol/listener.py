@@ -8,13 +8,6 @@ from . import globalVar; globalVar.init()
 
 class EventListener(EventListenerBase):
 
-    @property
-    def cmd_interface(self) -> Callable[[str], Any]:
-        if hasattr(self, "input_thread"):
-            return self.input_thread.sendServerCommand
-        else:
-            return lambda x: warn("Minecraft command line interface not ready.")
-
     def listen(self):
         while self.proc.poll() is None:
             # Log listening loop

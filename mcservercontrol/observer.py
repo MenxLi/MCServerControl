@@ -12,8 +12,10 @@ from . import globalVar
 class Observer():
     subclasses: Dict[str, Type[Observer]] = {}
 
-    def __init__(self, server: Server) -> None:
-        self.server = server
+    def __init__(self) -> None:
+        assert globalVar.server is not None, "Start minecraft server before initialize observers"
+        self.server = globalVar.server
+
         self.cmd: Callable[[str], Any] = self.server.cmd
 
         # set when registered to the listerner
@@ -41,8 +43,8 @@ class PlayerObserver(Observer, ABC):
 class PlayerCommandObserver(PlayerObserver, ABC):
     ALL : Dict[str, PlayerCommandObserver] = {}
 
-    def __init__(self, entry: str, server: Server) -> None:
-        super().__init__(server=server)
+    def __init__(self, entry: str) -> None:
+        super().__init__()
         self.entry = entry
         self.ALL[entry] = self
 
@@ -55,15 +57,14 @@ class PlayerCommandObserver(PlayerObserver, ABC):
         ...
 
 
-class DaemonObserver:
+class DaemonObserver(Observer):
     """
     An concurrency observer runing on another thread
     Will be triggered every certain interval
     """
     def __init__(self) -> None:
-        self.server = Server(globalVar.server_cmd_entry)
-        self.cmd = self.server.cmd
-        
+        super().__init__()
+
         self._callbacks: List[Callable] = []
         self._ob_interval = 1
 
@@ -125,9 +126,9 @@ class CommandHelp(PlayerCommandObserver):
         return "\n".join(help_lines)
 
 
-def getDefaultObservers(server: Server) -> List[Union[PlayerObserver, PlayerCommandObserver]]:
+def getDefaultObservers() -> List[Union[PlayerObserver, PlayerCommandObserver]]:
     return [
-        OnlineTimeObserver(server),
-        CommandHelp("help", server)
+        OnlineTimeObserver(),
+        CommandHelp("help")
     ]
 
