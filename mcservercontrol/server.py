@@ -16,7 +16,6 @@ COLOR_T = Literal[
     "aqua",
     "green",
     "blue",
-    "dark_gray",
     "gray",
     "gold",
     "dark_purple",
@@ -24,7 +23,9 @@ COLOR_T = Literal[
     "dark_aqua",
     "dark_green",
     "dark_blue",
+    "dark_gray",
     "black",
+    "minecoin_goid",
 
     "random",
 ]
@@ -54,6 +55,13 @@ class Server:
     def randomHexColor() -> str:
         color = "%06x" % random.randint(0, 0xFFFFFF)
         return "#" + color
+    
+    def _mapColor(self, color: COLOR_T) -> str:
+        if color == "random":
+            color_ = self.randomHexColor()
+        else:
+            color_ = color
+        return color_
 
     def title(self, 
               target: Player,
@@ -61,22 +69,14 @@ class Server:
               ttype: Literal["title", "actionbar"] = "title",
               color: COLOR_T = "white", 
               ):
-        if color == "random":
-            color_ = self.randomHexColor()
-        else:
-            color_ = color
-        self.cmd(f'/title {target.name} {ttype} {{"text": "{text}", "color": "{color_}"}}')
+        self.cmd(f'/title {target.name} {ttype} {{"text": "{text}", "color": "{self._mapColor(color)}"}}')
 
     def title_setSubtitle(self, 
                     target: Player,
                     text: str, 
                     color: COLOR_T = "white", 
                     ):
-        if color == "random":
-            color_ = self.randomHexColor()
-        else:
-            color_ = color
-        self.cmd(f'/title {target.name} subtitle {{"text": "{text}", "color": "{color_}"}}')
+        self.cmd(f'/title {target.name} subtitle {{"text": "{text}", "color": "{self._mapColor(color)}"}}')
 
     def title_setTime(self, 
                         target: Player,
@@ -88,18 +88,14 @@ class Server:
         self.cmd(f'/title {target.name} times {times[0]} {times[1]} {times[2]}')
 
     def title_reset(self, target: Player):
-        ...
+        self.cmd(f'/title {target.name} reset')
 
     def title_clear(self, target: Player):
-        ...
+        self.cmd(f'/title {target.name} clear')
 
     def tellraw(self, target: Player, text: str, color: COLOR_T = "white"):
-        if color == "random":
-            color_ = self.randomHexColor()
-        else:
-            color_ = color
         text = text.replace("\n", "\\n")
-        self.cmd(f'/tellraw {target.name} {{"text": "{text}", "color": "{color_}"}}')
+        self.cmd(f'/tellraw {target.name} {{"text": "{text}", "color": "{self._mapColor(color)}"}}')
 
     def saveWorld(self):
         """Make a backup of the world"""
