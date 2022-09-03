@@ -52,5 +52,6 @@ For API useage, see `demo.py`
 ---
 ## New to Minecraft server hosting?
 Some useful resources:
-[Minecraft wiki - Tutorials/Setting up a server ](https://minecraft.fandom.com/wiki/Tutorials/Setting_up_a_server)  
-[Minecraft wiki - Commands](https://minecraft.fandom.com/wiki/Commands)
+
+* [Minecraft wiki - Tutorials/Setting up a server ](https://minecraft.fandom.com/wiki/Tutorials/Setting_up_a_server)  
+* [Minecraft wiki - Commands](https://minecraft.fandom.com/wiki/Commands)
