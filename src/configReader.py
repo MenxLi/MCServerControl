@@ -1,11 +1,18 @@
 import json
 import os
+from typing import TypedDict
 
 THIS_DIR = os.path.dirname(__file__)
 
 # Read configuration
 CONF_PATH = os.path.join(THIS_DIR, "config.json") 
 CONF_PATH = os.path.abspath(CONF_PATH)
+
+class CONF_T(TypedDict):
+    server_dir: str
+    entry: str
+    world_name: str
+    broadcast_port: int
 
 if not os.path.exists(CONF_PATH):
     # Generate default configuation and exit
@@ -21,8 +28,10 @@ if not os.path.exists(CONF_PATH):
     print("Please edit configuration and re-start this script")
     exit()
 
+
 with open(CONF_PATH, "r") as fp:
-    CONF = json.load(fp)
+    config: CONF_T = json.load(fp)
+    CONF = config
     WORKING_DIR = os.path.abspath(CONF["server_dir"])
     ENTRY = CONF["entry"]
     BROADCAST_PORT = CONF["broadcast_port"]

@@ -213,8 +213,8 @@ def startServer(port: int, event_queue: Queue):
     _log("Starting broadcast server on port %s" % port)
     app = Application()
     app.listen(port) 
-    tornado.autoreload.add_reload_hook(auto_reload_hook)
-    tornado.autoreload.start()
+    #  tornado.autoreload.add_reload_hook(auto_reload_hook)
+    #  tornado.autoreload.start()
 
     # Start new thread listening to minecraft server event
     Thread(target = updateLog, args = (event_queue, ), daemon=True).start()
@@ -228,10 +228,10 @@ def startServer(port: int, event_queue: Queue):
 def _log(txt: str):
     print(f"BROADCAST - {datetime.datetime.now()}: {txt}")
 
-if __name__ == "__main__":
-    _description = ""
-    parser = argparse.ArgumentParser(description = _description)
-    parser.add_argument("-p", "--port", type = int, default=25566)
-    args = parser.parse_args()
-    
-    startServer(args.port)
+#  if __name__ == "__main__":
+#      _description = ""
+#      parser = argparse.ArgumentParser(description = _description)
+#      parser.add_argument("-p", "--port", type = int, default=25566)
+#      args = parser.parse_args()
+#
+#      startServer(args.port)

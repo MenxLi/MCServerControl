@@ -7,6 +7,7 @@ from .configReader import WORKING_DIR, ENTRY, BROADCAST_PORT
 from .serverLogParser import parseLine
 from .broadcastServer import startServer as startBroadcastServer
 from .actions import ServerActions
+from . import globalVar; globalVar.init()
 
 
 class MCPopen(Popen):
@@ -52,6 +53,9 @@ def main():
     # Start a thread that listen to user input
     input_thread = InputThread(proc)
     input_thread.start()
+
+    # Set the method to send command to the server
+    globalVar.server_cmd_entry = input_thread.onInput
 
     # Start broadcast server process
     event_queue = Queue()

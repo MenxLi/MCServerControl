@@ -52,20 +52,28 @@ class ServerActions:
         def actionSchedule():
             # update user online time
             while True:
-                for player_name in self.player_stats.keys():
-                    player = self.player_stats[player_name]
-                    if player["is_online"]:
-                        time_since_last_login = TimeUtils.nowStamp() - player["time_login"]
-
-                        if time_since_last_login > WARN_TOLERANCE and \
-                                TimeUtils.nowStamp() - player["time_last_warn"] > WARN_INTERVAL:
-                            self.cmd("/tell {} You have been playing for {} hours, is it too long?".format(
-                                player_name, round(time_since_last_login/3600, 1)
-                            ))
-                            player["time_last_warn"] = TimeUtils.nowStamp()
+                self.remindAddiction()
                 time.sleep(LOOP_INTERVAL)
 
         Thread(target=actionSchedule, args = (), daemon=True).start()
+
+    def remindAddiction(self):
+        """
+        warn if any player is online too long
+        """
+        WARN_TOLERANCE =  3600
+        WARN_INTERVAL = 1200
+        for player_name in self.player_stats.keys():
+            player = self.player_stats[player_name]
+            if player["is_online"]:
+                time_since_last_login = TimeUtils.nowStamp() - player["time_login"]
+
+                if time_since_last_login > WARN_TOLERANCE and \
+                        TimeUtils.nowStamp() - player["time_last_warn"] > WARN_INTERVAL:
+                    self.cmd("/tell {} You have been playing for {} hours, is it too long?".format(
+                        player_name, round(time_since_last_login/3600, 1)
+                    ))
+                    player["time_last_warn"] = TimeUtils.nowStamp()
 
     def action_onLogin(self, player_name: str):
         # Maybe create a player status entry

@@ -33,6 +33,10 @@ class EVENT_CMD(_EVENT_BASE):
     user_name: str
     cmd: List[str]
 
+class EVENT_SPEAK(_EVENT_BASE):
+    user_name: str
+    content: str
+
 class EVENT_LISTPLAYER(_EVENT_BASE):
     all_players: str
 
@@ -41,6 +45,7 @@ class EVENT_ALL(_EVENT_BASE, total = False):
     user_name: str
     all_players: str
     cmd: List[str]
+    content: str
 
 
 def splitLogLineBySB(line: str) ->List[str]:
@@ -106,5 +111,9 @@ def parseLine(line: str) -> EVENT_ALL:
             event["user_name"] = user_name
             cmd_split = words[1:].strip("\n").split(" ")
             event["cmd"] = cmd_split
+        else:
+            event["etype"] = "speak"
+            event["user_name"] = user_name
+            event["content"] = words
 
     return event
