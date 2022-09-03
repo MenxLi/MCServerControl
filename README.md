@@ -1,10 +1,10 @@
 
 # Minecraft server control
-Run minecraft Java server under Python control
+Run minecraft-Java server under Python control
 
 Features:
 
-* Listening to server events and react
+* Listen to server events and react
 * Define your own player commands
 * Broadcast server log via webpage
 
@@ -45,7 +45,7 @@ You can define your own logic with the APIs.
 You would basically like to inherite from `observer.PlayerObserver` and `observer.PlayerCommandObserver`, then register them to the minecraft server listener:
 
 * `PlayerObserver` is used to watch player behaviour then react to that
-* `PlayerCommandObserver` is a subclass of `PlayerObserver`, defferent lies in that it is used to implement your own player commands. All user-defined player commands should start with backslash(`\`), e.g. `\help`
+* `PlayerCommandObserver` is a subclass of `PlayerObserver`, defference lies in that it is used to implement your own player commands. All user-defined player commands should start with backslash(`\`), e.g. `\help`
 
 For API useage, see `demo.py`
 
