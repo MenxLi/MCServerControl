@@ -1,5 +1,6 @@
 from typing import Iterable
 from src.player import Player
+from src.server import Server
 from src.observer import PlayerCommandObserver, PlayerObserver
 from src.timeUtils import TimeUtils
 
@@ -53,6 +54,27 @@ class CommandSuicide(PlayerCommandObserver):
         # it is necessary to implement the help entry
         return "Kill your self"
 
+class CommandOnlineTime(PlayerCommandObserver):
+    """
+    Show player online time
+    """
+    def __init__(self, server: Server) -> None:
+        # define entry here
+        super().__init__("online-time", server)
+
+    def onTriggered(self, player: Player, args: Iterable):
+        time_since_last_login = TimeUtils.nowStamp() - player.status.time_login
+        time_total = player.status.time_online + time_since_last_login
+        to_show = "Time online: {} hours \nTotal since server start: {} hours".format(
+            player.name, 
+            round(time_since_last_login/3600, 2), 
+            round(time_total/3600, 2)
+        )
+        self.server.tellraw(player, to_show, color="yellow")
+        return super().onTriggered(player, args)
+
+    def help(self) -> str:
+        return "Show online time (since last login and since server start)"
 
 class RemindAddictionCallback(PlayerObserver):
     """
@@ -81,3 +103,4 @@ class RemindAddictionCallback(PlayerObserver):
                             .format(round(time_since_last_login/3600, 1))
                     )
                     setattr(player.status, "time_last_warn", TimeUtils.nowStamp())
+
