@@ -27,7 +27,7 @@ class GoodbyeObserver(PlayerObserver):
     def onPlayerLogout(self, player: Player):
         for p in self.players.values():
             # p is player, traverse all players and inform everyone
-            self.server.title(target=p, ttype="actionbar", text = f"Bye bye {player.name}.", color="yellow")
+            self.server.title(target=p, ttype="actionbar", text = f"Bye bye {player.name}.", color="aqua")
 
         return super().onPlayerLogout(player)
 

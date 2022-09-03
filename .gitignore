@@ -3,7 +3,7 @@ _server
 node_modules
 package-lock.json
 package.json
-src/config.json
+mcservercontrol/config.json
 .vimrc
 dist
 build
