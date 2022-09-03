@@ -26,6 +26,7 @@ class GoodbyeObserver(PlayerObserver):
     """
     def onPlayerLogout(self, player: Player):
         for p in self.players.values():
+            # p is player, traverse all players and inform everyone
             self.server.title(target=p, ttype="actionbar", text = f"Bye bye {player.name}.", color="yellow")
 
         return super().onPlayerLogout(player)
@@ -35,6 +36,7 @@ class CommandSuicide(PlayerCommandObserver):
     A command to kill the player itself
     """
     def onTriggered(self, player: Player, args: Iterable):
+        # Using server.cmd to send native minecraft server command
         self.server.cmd(f"/kill {player.name}")
         return super().onTriggered(player, args)
     
@@ -46,10 +48,6 @@ class CommandOnlineTime(PlayerCommandObserver):
     """
     Show player online time
     """
-    def __init__(self, server: Server) -> None:
-        # define entry here
-        super().__init__("online-time", server)
-
     def onTriggered(self, player: Player, args: Iterable):
         time_since_last_login = TimeUtils.nowStamp() - player.status.time_login
         time_total = player.status.time_online + time_since_last_login

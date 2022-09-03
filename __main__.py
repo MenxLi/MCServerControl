@@ -19,7 +19,7 @@ if __name__ == "__main__":
         WelcomeObserver(server),
         GoodbyeObserver(server),
         CommandSuicide("suicide", server),
-        CommandOnlineTime(server)       # entry defined in class definition
+        CommandOnlineTime("online-time", server)
     ]
 
     # register them to the listener
