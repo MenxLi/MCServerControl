@@ -3,6 +3,7 @@ from typing import Any, Callable, Dict, Iterable, List, Optional, Type, Union
 from abc import abstractmethod, ABC
 import time
 from threading import Thread
+from .configReader import VERSION
 from .timeUtils import TimeUtils
 from .player import Player
 from .server import Server
@@ -99,6 +100,27 @@ class OnlineTimeObserver(PlayerObserver):
         player.status.time_online += TimeUtils.nowStamp() - player.status.time_login
         return super().onPlayerLogout(player)
 
+class DisplayVersionObserver(PlayerObserver):
+    def onPlayerLogin(self, player: Player):
+        self.server.tellraw(
+            target=player, 
+            text="MCServerControl version - {}".format(VERSION),
+            color="aqua"
+        )
+        return super().onPlayerLogin(player)
+
+class DisplayVersionCommand(PlayerCommandObserver):
+    def onTriggered(self, player: Player, args: Iterable):
+        self.server.tellraw(
+            target=player, 
+            text="MCServerControl version - {}".format(VERSION),
+            color="aqua"
+        )
+        return super().onTriggered(player, args)
+    
+    def help(self) -> str:
+        return "Show MCServerControl version."
+
 class CommandHelp(PlayerCommandObserver):
     """
     Show command help
@@ -129,6 +151,8 @@ class CommandHelp(PlayerCommandObserver):
 def getDefaultObservers() -> List[Union[PlayerObserver, PlayerCommandObserver]]:
     return [
         OnlineTimeObserver(),
+        DisplayVersionObserver(),
+        DisplayVersionCommand("version"),
         CommandHelp("help")
     ]
 

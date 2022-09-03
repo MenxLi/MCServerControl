@@ -31,3 +31,10 @@ if not os.path.exists(CONF_PATH):
 
 with open(CONF_PATH, "r") as fp:
     config: CONF_T = json.load(fp)
+
+_version_histories = [
+    ("0.0.1", "init"),
+    ("0.1.0", "Re-written with new abstractions: player, server, observer and listener")
+]
+
+VERSION, UPDATE_NOTE = _version_histories[-1]
