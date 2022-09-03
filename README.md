@@ -1,6 +1,6 @@
 
 # Minecraft server control
-Run minecraft java server under Python control
+Run minecraft Java server under Python control
 
 Features:
 
@@ -16,7 +16,7 @@ To start, run:
 ```
 python .
 ```
-On the first run, the program will create a configuration file at: `src/config.json`.   
+On the first run, the program will create a configuration file at: `mcservercontrol/config.json`.   
 Edit the configuation file and run the above command again will start the server.
 
 ### Configure

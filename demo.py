@@ -1,8 +1,6 @@
 from typing import Iterable
-from src.player import Player
-from src.server import Server
-from src.observer import PlayerCommandObserver, PlayerObserver
-from src.timeUtils import TimeUtils
+from mcservercontrol import Player, PlayerObserver, PlayerCommandObserver
+from mcservercontrol.timeUtils import TimeUtils
 
 
 class WelcomeObserver(PlayerObserver):

@@ -1,6 +1,4 @@
-from src.listener import EventListener
-from src.server import Server
-from src.observer import getDefaultObservers
+from mcservercontrol import EventListener, Server, getDefaultObservers
 
 
 if __name__ == "__main__":
