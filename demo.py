@@ -25,9 +25,11 @@ class GoodbyeObserver(PlayerObserver):
     Inform everyone if any player is leaving
     """
     def onPlayerLogout(self, player: Player):
-        for p in self.players.values():
-            # p is player, traverse all players and inform everyone
-            self.server.title(target=p, ttype="actionbar", text = f"Bye bye {player.name}.", color="aqua")
+        #  for p in self.players.values():
+        #      # p is player, traverse all players and inform everyone
+        #      self.server.title(target=p, ttype="actionbar", text = f"Bye bye {player.name}.", color="aqua")
+
+        self.server.cmd(f"/say Goodbye, {player.name}")
 
         return super().onPlayerLogout(player)
 
