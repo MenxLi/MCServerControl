@@ -63,7 +63,7 @@ class EventListener(EventListenerBase):
             
         #Player enter command or speak
         elif re.match(r"\<[^\<]*\>", content):
-            match = re.match(r"\<[^\<]*\>", content)
+            match = re.match(r"\<[^\<^\>]*\>", content)
             assert match is not None
             name = content[match.start()+1: match.end()-1]
             player = self.players[name]

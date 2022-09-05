@@ -66,7 +66,7 @@ class LogParser:
 
 class InfoHandler(tornado.web.RequestHandler, RequestHandlerBase):
     def _getLog(self) -> str:
-        content = readLogLines()
+        content = [l.replace("<", "&lt").replace(">", "&gt>") for l in readLogLines()]
         html = string.Template("""
         <!DOCTYPE html>
         <html>
