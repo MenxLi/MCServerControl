@@ -9,6 +9,20 @@ if __name__ == "__main__":
     # Load default observers
     listener.register(*getDefaultObservers())
 
+    # ======================== Your custom code here =====================
+    from demo import WelcomeObserver, CommandSuicide
+
+    # Add custom observers
+    obs = [
+        WelcomeObserver(),
+        CommandSuicide("suicide"),
+    ]
+
+    # register them to the listener
+    listener.register(*obs)
+
+    # ======================== Custom code ends =========================
+
     # Optionally load some more predefined observers
     from mcservercontrol.presetOB import GoodbyeObserver
     from mcservercontrol.presetOB.onlineControl import CommandOnlineTime, RemindAddictionCallback
@@ -28,20 +42,6 @@ if __name__ == "__main__":
 
     # register to the listener
     listener.register(remind_addiction_ob)
-
-    # ======================== Your custom code here =====================
-    from demo import WelcomeObserver, CommandSuicide
-
-    # Add custom observers
-    obs = [
-        WelcomeObserver(),
-        CommandSuicide("suicide"),
-    ]
-
-    # register them to the listener
-    listener.register(*obs)
-
-    # ======================== Custom code ends =========================
 
     # Start listening loop
     listener.listen()

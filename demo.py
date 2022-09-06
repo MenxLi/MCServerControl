@@ -32,20 +32,3 @@ class CommandSuicide(PlayerCommandObserver):
     def help(self) -> str:
         # it is necessary to implement the help entry
         return "Kill your self"
-
-class CommandOnlineTime(PlayerCommandObserver):
-    """
-    Show player online time
-    """
-    def onTriggered(self, player: Player, args: Iterable):
-        time_since_last_login = TimeUtils.nowStamp() - player.status.time_login
-        time_total = player.status.time_online + time_since_last_login
-        to_show = "Time online: {} hours \nTotal since server start: {} hours".format(
-            round(time_since_last_login/3600, 2), 
-            round(time_total/3600, 2)
-        )
-        self.server.tellraw(player, to_show, color="yellow")
-        return super().onTriggered(player, args)
-
-    def help(self) -> str:
-        return "Show online time (since last login and since server start)"
