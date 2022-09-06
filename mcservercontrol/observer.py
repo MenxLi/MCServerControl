@@ -90,14 +90,28 @@ class OnlineTimeObserver(PlayerObserver):
     Keep track of the player online time,
     Record them in player.status
     """
-    def onPlayerLogin(self, player: Player):
+    def onPlayerLogin(self, player: Player):   
+        # previous login date
+        print(player.status.time_login)
+        prev_login = TimeUtils.stamp2Local(player.status.time_login).date()
+
         player.status.is_online = True
         player.status.time_login = TimeUtils.nowStamp()
+
+        this_login = TimeUtils.stamp2Local(player.status.time_login).date()
+        if prev_login != this_login:
+            # login in another day, reset daily online time
+            player.status.time_online_today = 0
+
         return super().onPlayerLogin(player)
     
     def onPlayerLogout(self, player: Player):
         player.status.is_online = False
-        player.status.time_online += TimeUtils.nowStamp() - player.status.time_login
+
+        this_online_time = TimeUtils.nowStamp() - player.status.time_login
+        player.status.time_online += this_online_time
+        player.status.time_online_today += this_online_time
+
         return super().onPlayerLogout(player)
 
 class DisplayVersionObserver(PlayerObserver):
