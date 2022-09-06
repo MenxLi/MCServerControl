@@ -34,7 +34,8 @@ with open(CONF_PATH, "r") as fp:
 
 _version_histories = [
     ("0.0.1", "init"),
-    ("0.1.0", "Re-written with new abstractions: player, server, observer and listener")
+    ("0.1.0", "Re-written with new abstractions: player, server, observer and listener"),
+    ("0.1.1", "Player status using get/set, record player today's online time"), 
 ]
 
 VERSION, UPDATE_NOTE = _version_histories[-1]
