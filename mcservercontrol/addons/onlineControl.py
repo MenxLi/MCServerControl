@@ -22,7 +22,7 @@ class CommandOnlineTime(PlayerCommandObserver):
     def onTriggered(self, player: Player, args: List[str]):
         if not args:
             online = getOnlineTime(player)
-            to_show = "Time online: {} hours \nTime today: {}hours \nTotal since server start: {} hours".format(
+            to_show = "Time online: {} hours \nTime today: {} hours \nTotal since server start: {} hours".format(
                 round(online["this"]/3600, 2), 
                 round(online["today"]/3600, 2),
                 round(online["total"]/3600, 2),
