@@ -63,8 +63,8 @@ class RemindAddictionCallback(PlayerObserver):
 
     def __call__(self):
         # The method will be added to daemon and run inside loop of the listener.daemon thread
-        WARN_TOLERANCE =  36
-        WARN_INTERVAL = 12
+        WARN_TOLERANCE =  3600
+        WARN_INTERVAL = 1200
 
         for player in self.players.values():
             # "time_last_warn" is not in player status by default

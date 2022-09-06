@@ -146,6 +146,12 @@ class EventListenerBase:
                 self.player_command_observers[entry].onTriggered(
                     event["player"], event["cmd_split"][1]
                 )
+            else:
+                self.daemon.server.tellraw(
+                    target = event["player"],
+                    text = "Invalid command - {}".format(entry),
+                    color = "red"
+                )
 
     @property
     def cmd_interface(self) -> Callable[[str], Any]:
