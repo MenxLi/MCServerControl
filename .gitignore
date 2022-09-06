@@ -7,4 +7,5 @@ mcservercontrol/config.json
 .vimrc
 dist
 build
+*.egg-info
 .zip
