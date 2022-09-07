@@ -1,12 +1,11 @@
 from __future__ import annotations
-from typing import Any, Callable, Dict, Iterable, List, Optional, Type, Union
+from typing import Any, Callable, Dict, List, Optional, Type, Union
 from abc import abstractmethod, ABC
 import time
 from threading import Thread
 from .configReader import VERSION
 from .timeUtils import TimeUtils
 from .player import Player
-from .server import Server
 from . import globalVar
 
 
@@ -50,7 +49,7 @@ class PlayerCommandObserver(PlayerObserver, ABC):
         self.ALL[entry] = self
 
     @abstractmethod
-    def onTriggered(self, player: Player, args: Iterable):
+    def onTriggered(self, player: Player, args: List[str]):
         ...
 
     @abstractmethod
@@ -124,7 +123,7 @@ class DisplayVersionObserver(PlayerObserver):
         return super().onPlayerLogin(player)
 
 class DisplayVersionCommand(PlayerCommandObserver):
-    def onTriggered(self, player: Player, args: Iterable):
+    def onTriggered(self, player: Player, args: List[str]):
         self.server.tellraw(
             target=player, 
             text="MCServerControl version - {}".format(VERSION),
@@ -139,7 +138,7 @@ class CommandHelp(PlayerCommandObserver):
     """
     Show command help
     """
-    def onTriggered(self, player: Player, args: Iterable):
+    def onTriggered(self, player: Player, args: List[str]):
         if not args:
             self.server.tellraw(player, self.help())
         else:

@@ -97,6 +97,9 @@ class Server:
         text = text.replace("\n", "\\n")
         self.cmd(f'/tellraw {target.name} {{"text": "{text}", "color": "{self._mapColor(color)}"}}')
 
+    def say(self, text: str):
+        self.cmd(f"/say {text}")
+
     def saveWorld(self):
         """Make a backup of the world"""
         world_dir = os.path.join(config["server_dir"], config["world_name"])

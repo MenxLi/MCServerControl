@@ -1,5 +1,5 @@
 import random
-from typing import Iterable
+from typing import List
 from mcservercontrol import Player, PlayerObserver, PlayerCommandObserver
 from mcservercontrol.timeUtils import TimeUtils
 
@@ -24,7 +24,7 @@ class CommandSuicide(PlayerCommandObserver):
     """
     A command to kill the player itself
     """
-    def onTriggered(self, player: Player, args: Iterable):
+    def onTriggered(self, player: Player, args: List):
         # Using server.cmd to send native minecraft server command
         self.server.cmd(f"/kill {player.name}")
         return super().onTriggered(player, args)
