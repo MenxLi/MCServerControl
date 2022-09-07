@@ -1,28 +1,64 @@
 from typing import List
 from mcservercontrol.observer import PlayerCommandObserver
 from mcservercontrol.player import Player
+from mcservercontrol.server import SCHEDULE_ID
+from mcservercontrol import globalVar
 
 class CommandKillItem(PlayerCommandObserver):
     """
     Command to kill all items
     """
+    def onPlayerLogin(self, player: Player):
+
+        player.status.setdefault("kill_item_thread_ids", [])
+
+        return super().onPlayerLogin(player)
+
+
     def onTriggered(self, player: Player, args: List[str]):
+
+        k_ids: List[SCHEDULE_ID] = player.status.get("kill_item_thread_ids")
 
         def _killItems():
             self.server.cmd("/kill @e[type=item]")
-            self.server.say("Killed all items.")
+            self.server.say(f"Killed all items. (Triggered by {player.name})")
+
+        def _checkAlive():
+            for i in range(len(k_ids))[::-1]:
+                t_id = k_ids[i]
+                if not t_id in globalVar.scheduled_threads:
+                    # stopped
+                    k_ids.pop(i)
 
         if not args:
             self.server.say("Will clear items in 1 minute.")
-            self.server.schedule(_killItems, 60)
+            k_id = self.server.schedule(_killItems, 60)
+            k_ids.append(k_id)
+
+        elif args[0].isnumeric():
+            delay = float(args[0])
+            self.server.say(f"Will clear items in {round(delay, 1)} seconds. (Triggered by {player.name})")
+            k_id = self.server.schedule(_killItems, delay)
+            k_ids.append(k_id)
 
         elif args[0] == "now":
             _killItems()
 
-        elif args[0].isnumeric():
-            delay = float(args[0])
-            self.server.say(f"Will clear items in {round(delay, 1)} seconds.")
-            self.server.schedule(_killItems, delay)
+        elif args[0] == "stop":
+            _checkAlive()
+            if k_ids:
+                for t_id in k_ids:
+                    thread = globalVar.scheduled_threads[t_id]
+                    thread.stop()
+                player.status.set("kill_item_thread_ids", [])
+
+                self.server.say(f"Stopped kill item schedule ({player.name})")
+            else:
+                self.server.tellraw(
+                    target=player,
+                    text="You have not started kill-item schedule",
+                    color="red"
+                )
 
         else:
             self.onInvalidArguments(player)
@@ -31,7 +67,9 @@ class CommandKillItem(PlayerCommandObserver):
 
     def help(self) -> str:
         to_show = [
-            "Kill all items, usage: {} [now/<delay>]".format(self.entry),
-            "By default delay=60s"
+            "Kill all items, usage: {} [now | <delay> | stop]".format(self.entry),
+            "By default delay=60s",
+            "Use now to kill items instantly",
+            "Use stop to stop scheduled kill item commands"
         ]
         return "\n".join(to_show)
