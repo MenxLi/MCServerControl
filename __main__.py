@@ -24,8 +24,9 @@ if __name__ == "__main__":
     # ======================== Custom code ends =========================
 
     # Optionally load some more predefined observers
-    from mcservercontrol.addons import GoodbyeObserver, CommandKillItem
+    from mcservercontrol.addons import GoodbyeObserver
     from mcservercontrol.addons.onlineControl import CommandOnlineTime, RemindAddictionCallback
+    from mcservercontrol.addons.killItem import CommandKillItem
 
     obs = [
         GoodbyeObserver(),
