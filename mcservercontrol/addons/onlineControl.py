@@ -41,7 +41,7 @@ class CommandOnlineTime(PlayerCommandObserver):
                 self.server.tellraw(player, "NO online-time reminder find.", color="red")
 
         else:
-            self.server.tellraw(player, "Invalid command.", color="red")
+            self.onInvalidArguments(player)
 
         return super().onTriggered(player, args)
 

@@ -3,6 +3,8 @@ from typing import Any, Callable, Dict, List, Optional, Type, Union
 from abc import abstractmethod, ABC
 import time
 from threading import Thread
+
+from mcservercontrol.server import COLOR_T
 from .configReader import VERSION
 from .timeUtils import TimeUtils
 from .player import Player
@@ -55,6 +57,21 @@ class PlayerCommandObserver(PlayerObserver, ABC):
     @abstractmethod
     def help(self) -> str:
         ...
+
+    def showHelp(self, player: Player, color: COLOR_T = "aqua"):
+        self.server.tellraw(
+            target = player,
+            text = self.help(),
+            color = color
+        )
+
+    def onInvalidArguments(self, player: Player):
+        self.server.tellraw(
+            target = player,
+            text = "Invalid arguments! \nUsage: ",
+            color = "red"
+        )
+        self.showHelp(player, "yellow")
 
 
 class DaemonObserver(Observer):
@@ -140,12 +157,12 @@ class CommandHelp(PlayerCommandObserver):
     """
     def onTriggered(self, player: Player, args: List[str]):
         if not args:
-            self.server.tellraw(player, self.help())
+            self.showHelp(player)
         else:
             entry = list(args)[0]
             if entry in self.ALL:
                 self.server.tellraw(player, "Help for command - {}".format(entry), color="yellow")
-                self.server.tellraw(player, self.ALL[entry].help())
+                self.ALL[entry].showHelp(player)
             else:
                 self.server.tellraw(player, "No such command - {}".format(entry), color="red")
                 

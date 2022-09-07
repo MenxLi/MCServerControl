@@ -71,9 +71,7 @@ class CommandKillItem(PlayerCommandObserver):
             self.server.schedule(_killItems, delay)
 
         else:
-            self.server.tellraw(target=player,
-                                text = "Invalid arguments",
-                                color = "red")
+            self.onInvalidArguments(player)
 
         return super().onTriggered(player, args)
 
