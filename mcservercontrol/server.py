@@ -2,9 +2,11 @@
 An abstraction of the minecraft server actions
 """
 
-from typing import Any, Callable, Literal, Tuple
+from typing import Any, Callable, Literal, Tuple, NewType
 import time, random, os
 from threading import Thread
+import uuid
+from . import globalVar
 from .configReader import config
 from .player import Player
 
@@ -30,6 +32,39 @@ COLOR_T = Literal[
     "random",
 ]
 
+SCHEDULE_ID = NewType("SCHEDULE_ID", str)
+
+def newScheduleID() -> SCHEDULE_ID:
+    return SCHEDULE_ID(uuid.uuid4().hex)
+
+class ScheduleThread(Thread):
+    def __init__(self, sid: SCHEDULE_ID, target: Callable[[], None], delay: float) -> None:
+        super().__init__(target = target, daemon=True)
+        self.id = sid
+        self._target = target
+        self._delay = delay
+        self._stop_flag = False
+        self.stopped = False
+
+        # add to scheduled_threads pool
+        globalVar.scheduled_threads[self.id] = self
+
+    def run(self) -> None:
+        time.sleep(self._delay)
+        if not self._stop_flag:
+            self._target()
+        self._onStop()
+
+    def stop(self):
+        self._stop_flag = True
+        self._onStop()
+
+    def _onStop(self):
+        self.stopped = True
+        # Clear from global thread_id pool
+        if self.id in globalVar.scheduled_threads:
+            del globalVar.scheduled_threads[self.id]
+
 class Server:
     def __init__(self, cmd_interface: Callable[[str], Any]) -> None:
         """
@@ -42,14 +77,18 @@ class Server:
         return self._cmd
 
     @staticmethod
-    def schedule(func: Callable, delay: float, *args, **kwargs):
+    def schedule(func: Callable, delay: float, *args, **kwargs) -> SCHEDULE_ID:
         """
         Delay execution of a function
         """
-        def _f():
-            time.sleep(delay)
-            func(*args, **kwargs)
-        Thread(target = _f, args=(), daemon = True).start()
+        thread_id = newScheduleID()
+        t = ScheduleThread(
+            thread_id,
+            target = lambda: func(*args, **kwargs), 
+            delay = delay
+        )
+        t.start()
+        return thread_id
 
     @staticmethod
     def randomHexColor() -> str:
