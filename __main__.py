@@ -30,8 +30,8 @@ if __name__ == "__main__":
 
     obs = [
         GoodbyeObserver(),
-        CommandOnlineTime("online-time"),
-        CommandKillItem("kill-item"),
+        CommandOnlineTime("online-time", alias=["ot"]),
+        CommandKillItem("kill-item", alias=["ki"]),
     ]
 
     # register them to the listener

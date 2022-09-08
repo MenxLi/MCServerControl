@@ -45,10 +45,11 @@ class PlayerObserver(Observer, ABC):
 class PlayerCommandObserver(PlayerObserver, ABC):
     ALL : Dict[str, PlayerCommandObserver] = {}
 
-    def __init__(self, entry: str) -> None:
+    def __init__(self, entry: str, alias: List[str] = []) -> None:
         super().__init__()
         self.entry = entry
         self.ALL[entry] = self
+        self.alias = alias
 
     @abstractmethod
     def onTriggered(self, player: Player, args: List[str]):
@@ -172,8 +173,12 @@ class CommandHelp(PlayerCommandObserver):
         help_lines = [
             "Avaliable commands: "
         ]
-        for entry in self.ALL.keys():
-            help_lines.append(f" - {entry}")
+        for entry, ob in self.ALL.items():
+            if ob.alias:
+                alias_str = ", ".join(ob.alias)
+                help_lines.append(f" - {entry} (alias: {alias_str})")
+            else:
+                help_lines.append(f" - {entry}")
         help_lines.append("To show help for specific command: \\\\help [entry]")
         return "\n".join(help_lines)
 

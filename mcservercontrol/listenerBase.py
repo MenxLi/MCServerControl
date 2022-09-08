@@ -107,6 +107,10 @@ class EventListenerBase:
                 self.player_observers.append(ob)
             if isinstance(ob, PlayerCommandObserver):
                 self.player_command_observers[ob.entry] = ob
+                
+                # alias, same function, different name
+                for al in ob.alias:
+                    self.player_command_observers[al] = ob
 
     def addDaemonCallback(self, callback: Callable):
         self.daemon.addCallback(callback)
