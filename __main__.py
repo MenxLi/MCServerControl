@@ -27,11 +27,13 @@ if __name__ == "__main__":
     from mcservercontrol.addons import GoodbyeObserver
     from mcservercontrol.addons.onlineControl import CommandOnlineTime, RemindAddictionCallback
     from mcservercontrol.addons.killItem import CommandKillItem
+    from mcservercontrol.addons.teleportPlayer import CommandTeleportPlayer
 
     obs = [
         GoodbyeObserver(),
         CommandOnlineTime("online-time", alias=["ot"]),
         CommandKillItem("kill-item", alias=["ki"]),
+        CommandTeleportPlayer("teleport-player", alias=["tpp"])
     ]
 
     # register them to the listener
