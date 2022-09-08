@@ -171,12 +171,12 @@ class CommandHelp(PlayerCommandObserver):
 
     def help(self):
         help_lines = [
-            "Avaliable commands: "
+            "Avaliable commands (alias in parentheses): "
         ]
         for entry, ob in self.ALL.items():
             if ob.alias:
                 alias_str = ", ".join(ob.alias)
-                help_lines.append(f" - {entry} (alias: {alias_str})")
+                help_lines.append(f" - {entry} ({alias_str})")
             else:
                 help_lines.append(f" - {entry}")
         help_lines.append("To show help for specific command: \\\\help [entry]")
