@@ -31,20 +31,24 @@ class CommandKillItem(PlayerCommandObserver):
                     k_ids.pop(i)
 
         if not args:
+            # By default, kill all items in 1 minute
             self.server.say("Will clear items in 1 minute.")
             k_id = self.server.schedule(_killItems, 60)
             k_ids.append(k_id)
 
         elif args[0].isnumeric():
+            # Schedule a item kill command
             delay = float(args[0])
             self.server.say(f"Will clear items in {round(delay, 1)} seconds. (Triggered by {player.name})")
             k_id = self.server.schedule(_killItems, delay)
             k_ids.append(k_id)
 
         elif args[0] == "now":
+            # Kill item instantly
             _killItems()
 
         elif args[0] == "stop":
+            # Stop possibe scheduled item kill commands, triggered by this player
             _checkAlive()
             if k_ids:
                 for t_id in k_ids:
@@ -70,6 +74,10 @@ class CommandKillItem(PlayerCommandObserver):
             "Kill all items, usage: {} [now | <delay> | stop]".format(self.entry),
             "By default delay=60s",
             "Use now to kill items instantly",
-            "Use stop to stop scheduled kill item commands"
+            "Use stop to stop scheduled kill item commands",
+            "Examples: ",
+            "\t {} now : Kill item instantly".format(self.entry),
+            "\t {} 30 : Kill item in 30s".format(self.entry),
+            "\t {} stop : Stop scheduled kill-item".format(self.entry),
         ]
         return "\n".join(to_show)
