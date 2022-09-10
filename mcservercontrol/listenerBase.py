@@ -128,6 +128,9 @@ class EventListenerBase:
 
         if event["etype"] == "login":
             assert "player" in event
+            # Load player status on login
+            event["player"].loadStatus()
+
             for p_ob in self.player_observers:
                 p_ob.onPlayerLogin(event["player"])
 
@@ -135,6 +138,9 @@ class EventListenerBase:
             assert "player" in event
             for p_ob in self.player_observers:
                 p_ob.onPlayerLogout(event["player"])
+
+            # Save player status on logout
+            event["player"].saveStatus()
 
         if event["etype"] == "speak":
             assert "player" in event

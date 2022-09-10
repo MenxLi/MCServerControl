@@ -14,6 +14,10 @@ class CONF_T(TypedDict):
     world_name: str
     broadcast_port: int
 
+    # Entries inferred from config file
+    world_dir: str              # /server_dir/world_name
+    world_conf_dir: str         # /server_dir/world_name/.mcservercontrol
+
 if not os.path.exists(CONF_PATH):
     # Generate default configuation and exit
     with open(CONF_PATH, "w") as fp:
@@ -31,6 +35,14 @@ if not os.path.exists(CONF_PATH):
 
 with open(CONF_PATH, "r") as fp:
     config: CONF_T = json.load(fp)
+
+    # world directory
+    config["world_dir"] = os.path.join(config["server_dir"], config["world_name"])
+    # world configuration directory
+    __world_conf_dir = os.path.join(config["server_dir"], config["world_name"], ".mcservercontrol")
+    if not os.path.exists(__world_conf_dir):
+        os.mkdir(__world_conf_dir)
+    config["world_conf_dir"] = __world_conf_dir
 
 _version_histories = [
     ("0.0.1", "init"),
