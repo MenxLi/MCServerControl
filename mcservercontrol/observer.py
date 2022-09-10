@@ -187,6 +187,6 @@ def getDefaultObservers() -> List[Union[PlayerObserver, PlayerCommandObserver]]:
         OnlineTimeObserver(),
         DisplayVersionObserver(),
         DisplayVersionCommand("version"),
-        CommandHelp("help")
+        CommandHelp("help", alias=["h", "?"]),
     ]
 
