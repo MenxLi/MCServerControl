@@ -22,7 +22,7 @@ class CommandOnlineTime(PlayerCommandObserver):
     def onTriggered(self, player: Player, args: List[str]):
         if not args:
             online = getOnlineTime(player)
-            to_show = "Time online: {} hours \nTime today: {} hours \nTotal since server start: {} hours".format(
+            to_show = "Time online: {} hours \nTime today: {} hours \nTotal: {} hours".format(
                 round(online["this"]/3600, 2), 
                 round(online["today"]/3600, 2),
                 round(online["total"]/3600, 2),
@@ -40,6 +40,11 @@ class CommandOnlineTime(PlayerCommandObserver):
             else:
                 self.server.tellraw(player, "NO online-time reminder find.", color="red")
 
+        elif args[0] == "clear":
+            player.status.time_online = 0
+            player.status.time_online_today = 0
+            self.server.tellraw(player, "Cleared online-time record", color="white")
+
         else:
             self.onInvalidArguments(player)
 
@@ -47,8 +52,12 @@ class CommandOnlineTime(PlayerCommandObserver):
 
     def help(self) -> str:
         to_show = [
-            "Show online time (since last login and since server start)",
-            "Usage: online-time [warn] [on/off]"
+            "Show online time",
+            "Usage: online-time [warn on/off] | [clear]",
+            "Examples: ",
+            "\t{} : show online time".format(self.entry),
+            "\t{} warn off : disable addiction warning".format(self.entry),
+            "\t{} clear : clear online time record before this login".format(self.entry),
         ]
         return "\n".join(to_show)
 
@@ -58,8 +67,8 @@ class RemindAddictionCallback(PlayerObserver):
     Remind player if anyone plays too long
     """
     def onPlayerLogin(self, player: Player):
-        player.status.setdefault("time_last_warn", 0)
-        player.status.setdefault("time_warn_flag", True)    # Indicates whether to show warning
+        player.status.setdefault("time_last_warn", 0, persistent=True)
+        player.status.setdefault("time_warn_flag", True, persistent=True)    # Indicates whether to show warning
 
     def __call__(self):
         # The method will be added to daemon and run inside loop of the listener.daemon thread
