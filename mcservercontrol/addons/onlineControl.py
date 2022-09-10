@@ -1,5 +1,5 @@
 from typing import List
-from mcservercontrol.observer import PlayerObserver, PlayerCommandObserver
+from mcservercontrol.observer import Observer, PlayerObserver, PlayerCommandObserver
 from mcservercontrol.player import Player
 from mcservercontrol.timeUtils import TimeUtils
 
@@ -43,6 +43,11 @@ class CommandOnlineTime(PlayerCommandObserver):
         elif args[0] == "clear":
             player.status.time_online = 0
             player.status.time_online_today = 0
+            if "RemindAddictionCallback" in Observer.subclasses:
+                print("Clearing ra_callback_cls")
+                ra_callback_cls: RemindAddictionCallback = Observer.subclasses["RemindAddictionCallback"]
+                ra_callback_cls.resetStatus(player)
+
             self.server.tellraw(player, "Cleared online-time record", color="white")
 
         else:
@@ -61,7 +66,7 @@ class CommandOnlineTime(PlayerCommandObserver):
         ]
         return "\n".join(to_show)
 
-class RemindAddictionCallback(PlayerObserver):
+class RemindAddictionCallback(PlayerObserver, flag = "RemindAddictionCallback"):
     """
     Online time reminder
     Remind player if anyone plays too long
@@ -69,6 +74,11 @@ class RemindAddictionCallback(PlayerObserver):
     def onPlayerLogin(self, player: Player):
         player.status.setdefault("time_last_warn", 0, persistent=True)
         player.status.setdefault("time_warn_flag", True, persistent=True)    # Indicates whether to show warning
+
+    @classmethod
+    def resetStatus(cls, player):
+        player.status.set("time_last_warn", 0, persistent=True)
+        player.status.set("time_warn_flag", True, persistent=True)
 
     def __call__(self):
         # The method will be added to daemon and run inside loop of the listener.daemon thread
