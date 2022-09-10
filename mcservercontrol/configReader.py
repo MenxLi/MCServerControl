@@ -49,6 +49,7 @@ _version_histories = [
     ("0.1.0", "Re-written with new abstractions: player, server, observer and listener"),
     ("0.1.1", "Player status using get/set, record player today's online time"), 
     ("0.1.2", "Record scheduled task globally; showHelp method; warn invalid command; addons"), 
+    ("0.1.3", "Added mcservercontrol world config directory; persistent player status"), 
 ]
 
 VERSION, UPDATE_NOTE = _version_histories[-1]
