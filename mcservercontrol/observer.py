@@ -1,6 +1,6 @@
 from __future__ import annotations
 import json
-from typing import Any, Callable, Dict, List, Optional, Type, Union
+from typing import Any, Callable, Dict, List, Optional, Type, Union, TypeVar
 from abc import abstractmethod, ABC
 import time
 from threading import Thread
@@ -13,7 +13,7 @@ from . import globalVar
 
 
 class Observer():
-    subclasses: Dict[str, Type[Observer]] = {}
+    subclasses: dict = {}
 
     def __init__(self) -> None:
         assert globalVar.server is not None, "Start minecraft server before initialize observers"
@@ -28,10 +28,10 @@ class Observer():
     def players(self) -> dict[str, Player]:
         return self._all_players
 
-    def __init_subclass__(cls, name: Optional[str] = None, **kwargs) -> None:
+    def __init_subclass__(cls, flag: Optional[str] = None, **kwargs) -> None:
         super().__init_subclass__(**kwargs)
-        if name:
-            cls.subclasses[name] = cls
+        if flag:
+            cls.subclasses[flag] = cls
 
 class PlayerObserver(Observer, ABC):
     def onPlayerLogin(self, player: Player):
