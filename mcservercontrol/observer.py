@@ -1,4 +1,5 @@
 from __future__ import annotations
+import json
 from typing import Any, Callable, Dict, List, Optional, Type, Union
 from abc import abstractmethod, ABC
 import time
@@ -109,7 +110,6 @@ class OnlineTimeObserver(PlayerObserver):
     """
     def onPlayerLogin(self, player: Player):   
         # previous login date
-        print(player.status.time_login)
         prev_login = TimeUtils.stamp2Local(player.status.time_login).date()
 
         player.status.is_online = True
@@ -124,7 +124,6 @@ class OnlineTimeObserver(PlayerObserver):
     
     def onPlayerLogout(self, player: Player):
         player.status.is_online = False
-
         this_online_time = TimeUtils.nowStamp() - player.status.time_login
         player.status.time_online += this_online_time
         player.status.time_online_today += this_online_time
