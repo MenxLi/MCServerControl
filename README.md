@@ -39,13 +39,13 @@ The configuation file is as follows:
 
 ## Development
 
-The implementation is completely object-oriented and pretty much typed, thus should be friendly to use.  
+The implementation is object-oriented and strongly typed, making it friendly and easy to use.  
 You can define your own logic with the APIs.
 
-You would basically like to inherite from `observer.PlayerObserver` and `observer.PlayerCommandObserver`, then register them to the minecraft server listener:
+To get started, you can inherite from `observer.PlayerObserver` and `observer.PlayerCommandObserver`, then register them to the minecraft server listener:
 
-* `PlayerObserver` is used to watch player behaviour then react to that
-* `PlayerCommandObserver` is a subclass of `PlayerObserver`, defference lies in that it is used to implement your own player commands. All user-defined player commands should start with backslash(`\`), e.g. `\help`
+- `PlayerObserver` class allows you to monitor player behavior and react to it
+- `PlayerCommandObserver` is a subclass of `PlayerObserver`, defference lies in that it is used to implement your own player commands. All user-defined player commands should start with backslash(`\`), e.g. `\help`
 
 For API useage, see `demo.py`
 

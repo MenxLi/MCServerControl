@@ -45,7 +45,7 @@ class CommandTeleportPlayer(PlayerCommandObserver):
 
         if dst_name:
             self.server.cmd(f"/tp {player.name} {dst_name}")
-            self.server.say(f"Teleported {player.name} to {dst_name}.")
+            #  self.server.say(f"Teleported {player.name} to {dst_name}.")
 
         return super().onTriggered(player, args)
 
