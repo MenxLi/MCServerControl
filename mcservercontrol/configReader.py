@@ -18,7 +18,11 @@ class CONF_T(TypedDict):
     world_dir: str              # /server_dir/world_name
     world_conf_dir: str         # /server_dir/world_name/.mcservercontrol
 
+__config_cache = None
 def config():
+    global __config_cache
+    if __config_cache:
+        return __config_cache
     if os.path.exists(CONF_PATH):
         with open(CONF_PATH, "r") as fp:
             config_raw = json.load(fp)
@@ -32,10 +36,12 @@ def config():
         print("Created world directory...")
         os.mkdir(cfg["world_dir"])
     # world configuration directory
-    __world_conf_dir = os.path.join(cfg["server_dir"], cfg["world_name"], ".mcservercontrol")
-    if not os.path.exists(__world_conf_dir):
-        os.mkdir(__world_conf_dir)
-    cfg["world_conf_dir"] = __world_conf_dir
+    _world_conf_dir = os.path.join(cfg["server_dir"], cfg["world_name"], ".mcservercontrol")
+    if not os.path.exists(_world_conf_dir):
+        os.mkdir(_world_conf_dir)
+    cfg["world_conf_dir"] = _world_conf_dir
+
+    __config_cache = cfg
     return cfg
 
 _version_histories = [
