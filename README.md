@@ -55,7 +55,7 @@ To get started, you can inherite from `observer.PlayerObserver` and `observer.Pl
 - `PlayerObserver` class allows you to monitor player behavior and react to it
 - `PlayerCommandObserver` is a subclass of `PlayerObserver`, defference lies in that it is used to implement your own player commands. All user-defined player commands should start with backslash(`\`), e.g. `\help`
 
-For API useage, see `mcservercontrol_demo`
+For API useage, see `mcservercontrol.addons` and `__main__.py` generated via initialization.
 
 ---
 ## New to Minecraft server hosting?
