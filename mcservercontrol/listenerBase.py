@@ -171,9 +171,9 @@ class EventListenerBase:
             return lambda x: warnings.warn("Minecraft command line interface not ready.")
 
     def startServer(self):
-        os.chdir(config["server_dir"])
+        os.chdir(config()["server_dir"])
 
-        self.proc = MCPopen(config["entry"].split(" "), stdout = PIPE, stdin = PIPE, stderr = STDOUT)
+        self.proc = MCPopen(config()["entry"].split(" "), stdout = PIPE, stdin = PIPE, stderr = STDOUT)
 
         # Start a thread that listen to user input
         self.input_thread = InputThread(self.proc)
@@ -186,7 +186,7 @@ class EventListenerBase:
         self.event_queue = Queue()
         broadcast_proc = Process(
             target=startBroadcastServer, 
-            args = (config["broadcast_port"], self.event_queue))
+            args = (config()["broadcast_port"], self.event_queue))
         broadcast_proc.start()
 
         # Catch KeyboardInterruption

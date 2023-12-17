@@ -1,8 +1,6 @@
 import random
 from typing import List
 from mcservercontrol import Player, PlayerObserver, PlayerCommandObserver
-from mcservercontrol.timeUtils import TimeUtils
-
 
 class WelcomeObserver(PlayerObserver):
     """

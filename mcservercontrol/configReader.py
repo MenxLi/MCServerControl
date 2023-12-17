@@ -1,12 +1,12 @@
 import json
-import os
+import os, sys
 from typing import TypedDict
 
-THIS_DIR = os.path.dirname(__file__)
+WORK_DIR = os.path.abspath(os.path.realpath(os.getcwd()))
 
 # Read configuration
-CONF_PATH = os.path.join(THIS_DIR, "config.json") 
-CONF_PATH = os.path.abspath(CONF_PATH)
+CONF_PATH = os.path.join(WORK_DIR, "mcservercontrol.json") 
+EXEC_PATH = os.path.join(WORK_DIR, "__main__.py")
 
 class CONF_T(TypedDict):
     server_dir: str
@@ -18,31 +18,25 @@ class CONF_T(TypedDict):
     world_dir: str              # /server_dir/world_name
     world_conf_dir: str         # /server_dir/world_name/.mcservercontrol
 
-if not os.path.exists(CONF_PATH):
-    # Generate default configuation and exit
-    with open(CONF_PATH, "w") as fp:
-        _default_conf = {
-            "server_dir": "",
-            "entry": "java -Xmx1024M -Xms1024M -jar server.jar nogui",
-            "world_name": "world",
-            "broadcast_port": 25566,
-        }
-        json.dump(_default_conf, fp, indent=1)
-    print("Generated default configuration file at: ", CONF_PATH)
-    print("Please edit configuration and re-start this script")
-    exit()
-
-
-with open(CONF_PATH, "r") as fp:
-    config: CONF_T = json.load(fp)
+def config():
+    if os.path.exists(CONF_PATH):
+        with open(CONF_PATH, "r") as fp:
+            config_raw = json.load(fp)
+    else:
+        raise FileNotFoundError("No configuration")
 
     # world directory
-    config["world_dir"] = os.path.join(config["server_dir"], config["world_name"])
+    cfg: CONF_T = config_raw.copy()
+    cfg["world_dir"] = os.path.join(cfg["server_dir"], cfg["world_name"])
+    if not os.path.exists(cfg["world_dir"]):
+        print("Created world directory...")
+        os.mkdir(cfg["world_dir"])
     # world configuration directory
-    __world_conf_dir = os.path.join(config["server_dir"], config["world_name"], ".mcservercontrol")
+    __world_conf_dir = os.path.join(cfg["server_dir"], cfg["world_name"], ".mcservercontrol")
     if not os.path.exists(__world_conf_dir):
         os.mkdir(__world_conf_dir)
-    config["world_conf_dir"] = __world_conf_dir
+    cfg["world_conf_dir"] = __world_conf_dir
+    return cfg
 
 _version_histories = [
     ("0.0.1", "init"),
@@ -50,6 +44,7 @@ _version_histories = [
     ("0.1.1", "Player status using get/set, record player today's online time"), 
     ("0.1.2", "Record scheduled task globally; showHelp method; warn invalid command; addons"), 
     ("0.1.3", "Added mcservercontrol world config directory; persistent player status"), 
+    ("0.1.4", "Use mcservercontrol.json at cwd as configuration file; use python module"),
 ]
 
 VERSION, UPDATE_NOTE = _version_histories[-1]

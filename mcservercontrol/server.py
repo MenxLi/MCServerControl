@@ -141,9 +141,9 @@ class Server:
 
     def saveWorld(self):
         """Make a backup of the world"""
-        world_dir = os.path.join(config["server_dir"], config["world_name"])
+        world_dir = os.path.join(config()["server_dir"], config()["world_name"])
         if not os.path.exists(world_dir):
-            self.cmd("/say saving faild, world (name:{}) not exists".format(config["world_name"]))
+            self.cmd("/say saving faild, world (name:{}) not exists".format(config()["world_name"]))
             return
         self.cmd("/say Saving the world...")
         self.cmd("/save-all flush")

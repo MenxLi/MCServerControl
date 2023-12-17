@@ -12,12 +12,20 @@ The realization is achieved by watching server log and send server command using
 
 ## Usage
 
-To start, run:
+### Installation
+```sh
+pip install .
 ```
+### Usage
+To start, go to the directory where you want to put the script files (typically java server directory), run:
+```sh
+mcservercontrol init
+```
+On the first run, the program will create a configuration file at: `{working_directory}/mcservercontrol.json`.   
+Edit the configuation file and start the server with:
+```sh
 python .
 ```
-On the first run, the program will create a configuration file at: `mcservercontrol/config.json`.   
-Edit the configuation file and run the above command again will start the server.
 
 ### Configure
 The configuation file is as follows:
@@ -47,7 +55,7 @@ To get started, you can inherite from `observer.PlayerObserver` and `observer.Pl
 - `PlayerObserver` class allows you to monitor player behavior and react to it
 - `PlayerCommandObserver` is a subclass of `PlayerObserver`, defference lies in that it is used to implement your own player commands. All user-defined player commands should start with backslash(`\`), e.g. `\help`
 
-For API useage, see `demo.py`
+For API useage, see `mcservercontrol_demo`
 
 ---
 ## New to Minecraft server hosting?
@@ -55,9 +63,3 @@ Some useful resources:
 
 * [Minecraft wiki - Tutorials/Setting up a server ](https://minecraft.fandom.com/wiki/Tutorials/Setting_up_a_server)  
 * [Minecraft wiki - Commands](https://minecraft.fandom.com/wiki/Commands)
-
-## Future
-<details>
-<summary> Ideas</summary>
-- [ ] logging
-</details>

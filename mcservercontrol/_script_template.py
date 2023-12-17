@@ -10,7 +10,7 @@ if __name__ == "__main__":
     listener.register(*getDefaultObservers())
 
     # ======================== Your custom code here =====================
-    from demo import WelcomeObserver, CommandSuicide
+    from mcservercontrol_demo import WelcomeObserver, CommandSuicide
 
     # Add custom observers
     obs = [

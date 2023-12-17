@@ -13,11 +13,14 @@ class PlayerStatus:
     time_online: float                  # Total online time since server start (befor this login)
     time_online_today: float            # Total online time since today (befor this login)
 
-    # save dir
-    record_dir = os.path.join(config["world_conf_dir"], "player_status")
-    if not os.path.exists(record_dir):
-        print("Created status record_dir: ", record_dir)
-        os.mkdir(record_dir)
+    @property
+    def record_dir(self):
+        # save dir
+        d = os.path.join(config()["world_conf_dir"], "player_status")
+        if not os.path.exists(d):
+            print("Created status record_dir: ", d)
+            os.mkdir(d)
+        return d
 
     def __init__(self, **kwargs) -> None:
         self.is_online = False

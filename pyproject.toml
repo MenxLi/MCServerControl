@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project.scripts]
+"mcsc" = "mcservercontrol.exec:main"
+"mcservercontrol" = "mcservercontrol.exec:main"
+
+[project.urls]
+"Homepage" = "https://github.com/MenxLi/mcservercontrol"
+"Bug Tracker" = "https://github.com/MenxLi/mcservercontrol/issues"
+
+[project]
+name = "MCserverControl"
+version = "0.1.2"
+description = "Run minecraft server under python control."
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+  { name="Li, Mengxun", email="mengxunli@whu.edu.cn" },
+]
+dependencies = [
+    "tornado"
+]
