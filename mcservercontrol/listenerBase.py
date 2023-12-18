@@ -124,7 +124,8 @@ class EventListenerBase:
         self.event_queue.put(event)
 
         if event["etype"] == "general":
-            ...
+            if event["log_line"].strip().endswith("[Server thread/INFO]: Saved the game"):
+                self.mc_server.onWorldSaveCallback()
 
         if event["etype"] == "login":
             assert "player" in event

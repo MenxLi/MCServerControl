@@ -79,6 +79,7 @@ class Server:
         """
         self._cmd = cmd_interface
         self._proc: MCPopen         # minecraft process
+        self.onWorldSaveCallback = lambda : None
     
     @property
     def proc(self):
@@ -173,14 +174,13 @@ class Server:
         if not os.path.exists(world_dir):
             self.cmd("/say saving faild, world (name:{}) not exists".format(config()["world_name"]))
             return
-        self.cmd("/save-all flush")
-
         backup_home = os.path.join(config()["server_dir"], "backups")
         if not os.path.exists(backup_home):
             os.mkdir(backup_home)
 
-        def _saveThread():
-            time.sleep(3)   # wait for the server to save
+        __saved_flag = False
+        def _backupworld():
+            nonlocal __saved_flag
             new_backup_file = os.path.join(backup_home, f"{config()['world_name']}_{time.strftime('%Y-%m-%d_%H-%M-%S')}.zip")
 
             # zip the world
@@ -203,5 +203,18 @@ class Server:
                         os.remove(os.path.join(backup_home, f))
             
             self.cmd("/say Saved to: {}".format(new_backup_file.split('/')[-1]))
+
+            # clean up
+            self.onWorldSaveCallback = lambda: None
+            __saved_flag = True
+
+        def _unloadbackupIfTimeout():
+            time.sleep(10)
+            if not __saved_flag:
+                self.onWorldSaveCallback = lambda: None
+                self.cmd("/say Failed to save.")
         
-        Thread(target=_saveThread, daemon=True).start()
+        # watch for next saved event (maximum wait for 10s), then do backup:
+        self.onWorldSaveCallback = _backupworld
+        self.cmd("/save-all flush")
+        Thread(target=_unloadbackupIfTimeout, daemon=True)
