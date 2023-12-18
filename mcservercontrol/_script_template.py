@@ -10,7 +10,7 @@ if __name__ == "__main__":
     listener.register(*getDefaultObservers())
 
     # Load some more predefined observers
-    from mcservercontrol.addons import WelcomeObserver, GoodbyeObserver, CommandSuicide
+    from mcservercontrol.addons import WelcomeObserver, GoodbyeObserver, PingObserver, CommandSuicide
     from mcservercontrol.addons.onlineControl import CommandOnlineTime
     from mcservercontrol.addons.killItem import CommandKillItem
     from mcservercontrol.addons.teleportPlayer import CommandTeleportPlayer
@@ -18,6 +18,7 @@ if __name__ == "__main__":
     obs = [
         WelcomeObserver(),
         GoodbyeObserver(),
+        PingObserver(),
         CommandSuicide("suicide"),
         CommandOnlineTime("online-time", alias=["ot"]),
         CommandKillItem("kill-item", alias=["ki"]),

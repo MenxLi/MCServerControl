@@ -33,6 +33,14 @@ class GoodbyeObserver(PlayerObserver):
 
         return super().onPlayerLogout(player)
 
+class PingObserver(PlayerObserver):
+    """
+    Connectivity test
+    """
+    def onPlayerSpeak(self, player: Player, content: str):
+        if content == "ping":
+            self.server.tellraw(player, "pong!", color='green')
+
 class CommandSuicide(PlayerCommandObserver):
     """
     A command to kill the player itself

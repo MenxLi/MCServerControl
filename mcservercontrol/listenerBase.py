@@ -147,7 +147,7 @@ class EventListenerBase:
             assert "player" in event
             assert "content" in event
             for p_ob in self.player_observers:
-                p_ob.onPlayerSpeak(event["player"], event["content"])
+                p_ob.onPlayerSpeak(event["player"], event["content"].strip())
 
         if event["etype"] == "cmd":
             assert "player" in event

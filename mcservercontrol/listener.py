@@ -82,7 +82,10 @@ class EventListener(EventListenerBase):
                 event["player"] = player
                 event["content"] = words
 
-        self.emit(event)
+        try:
+            self.emit(event)
+        except Exception as E:
+            self.mc_server.say("Error occured while processing event: {}".format(event))
 
     def _splitLogLineBySB(self, line: str) -> List[str]:
         """Split by square brackets"""
