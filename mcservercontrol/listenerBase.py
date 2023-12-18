@@ -196,10 +196,11 @@ class EventListenerBase:
             self.proc.stdin.write(b"stop\n")
             self.proc.stdin.flush()
             try:
-                self.proc.kill()
-            except:
-                pass
-            broadcast_proc.join()
+                self.proc.terminate()
+                broadcast_proc.terminate()
+            except Exception as e:
+                print("Error: {}".format(e))
+            
         # Handle interrupt signal
         signal.signal(signal.SIGINT, stop_handler)
 
