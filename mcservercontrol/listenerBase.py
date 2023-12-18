@@ -1,12 +1,11 @@
 from abc import abstractmethod
-from typing import Any, Callable, Dict, Literal, Tuple, TypedDict, List, Union, IO
+from typing import Any, Callable, Dict, Literal, Tuple, TypedDict, List, Union
 import os, warnings, signal
 from multiprocessing import Process, Queue
-from subprocess import Popen, PIPE, STDOUT
 from threading import Thread
 
 from mcservercontrol import globalVar
-from mcservercontrol.server import Server
+from mcservercontrol.server import Server, MCPopen
 
 from .configReader import config
 from .player import Player
@@ -52,27 +51,22 @@ class EVENT_ALL(EVENT_GENERAL, total = False):
     cmd_split: Tuple[str, List[str]]
     content: str
 
-class MCPopen(Popen):
-    # Type checking purpose
-    stdin: IO[bytes]
-    stdout: IO[bytes]
-
 
 class InputThread(Thread):
     """
     Thread listening to user input from console
     """
-    def __init__(self, mc_proc: MCPopen) -> None:
+    def __init__(self, mc_proc_getter: Callable[[], MCPopen]) -> None:
         """
          - mc_proc: minecraft server process
         """
         # daemon thread will end when main thread exit
         super().__init__(daemon=True)
-        self._mc_proc = mc_proc
+        self._proc_getter = mc_proc_getter
 
     @property
-    def mc_proc(self):
-        return self._mc_proc
+    def mc_proc(self) -> MCPopen:
+        return self._proc_getter()
 
     def run(self):
         while True:
@@ -94,12 +88,18 @@ class EventListenerBase:
         self.players: Dict[str, Player] = {}
         self.player_observers: List[PlayerObserver] = []
         self.player_command_observers: Dict[str, PlayerCommandObserver] = {}
+        self.event_queue = Queue()
 
         self.input_thread: InputThread
         self.daemon: DaemonObserver
-        self.proc: MCPopen
-        self.event_queue: Queue
-
+    
+    @property
+    def mc_server(self):
+        if globalVar.server:
+            return globalVar.server
+        else:
+            raise Exception("uninitialized")
+    
     def register(self, *obs: Union[PlayerObserver, PlayerCommandObserver]):
         for ob in obs:
             ob._all_players = self.players
@@ -173,29 +173,22 @@ class EventListenerBase:
     def startServer(self):
         os.chdir(config()["server_dir"])
 
-        self.proc = MCPopen(config()["entry"].split(" "), stdout = PIPE, stdin = PIPE, stderr = STDOUT)
-
-        # Start a thread that listen to user input
-        self.input_thread = InputThread(self.proc)
-        self.input_thread.start()
-
+        # A thread that listen to user input
+        self.input_thread = InputThread(lambda: self.mc_server.proc)
         # Save server to global variable to be accessed by observers
         globalVar.server = Server(self.input_thread.sendServerCommand)
 
-        # Start broadcast server process
-        self.event_queue = Queue()
-        broadcast_proc = Process(
-            target=startBroadcastServer, 
-            args = (config()["broadcast_port"], self.event_queue))
-        broadcast_proc.start()
+        # Start!
+        self._startWebserver()
+        self.input_thread.start()
+        self.mc_server.startMCServer()
 
         # Catch KeyboardInterruption
         def stop_handler(signum, frame):
             print("Stopping gracefully...")
             try:
-                self.stopMCServer()
-                broadcast_proc.terminate()
-                broadcast_proc.join()
+                self.mc_server.stopMCServer()
+                self._stopWebserver()
 
             except Exception as e:
                 print("Error: {}".format(e))
@@ -207,12 +200,17 @@ class EventListenerBase:
         self.daemon = DaemonObserver()
         self.daemon.start()
     
-    def stopMCServer(self):
-        # send command to minecraft server to stop gracefully
-        self.proc.stdin.write(b"stop\n")
-        self.proc.stdin.flush()
-        self.proc.wait()
-        print("Stopped minecraft server.")
+    def _startWebserver(self) -> Process:
+        # Start broadcast server process
+        self._web_proc = Process(
+            target=startBroadcastServer, 
+            args = (config()["broadcast_port"], self.event_queue))
+        self._web_proc.start()
+        return self._web_proc
+    
+    def _stopWebserver(self):
+        self._web_proc.terminate()
+        self._web_proc.join()
 
     @abstractmethod
     def listen(self):

@@ -2,13 +2,20 @@
 An abstraction of the minecraft server actions
 """
 
-from typing import Any, Callable, Literal, Tuple, NewType, Optional
+from typing import Any, Callable, Literal, Tuple, NewType, Optional, IO
+from subprocess import Popen, PIPE, STDOUT
 import time, random, os
 from threading import Thread
 import uuid
 from . import globalVar
 from .configReader import config
 from .player import Player
+
+class MCPopen(Popen):
+    # Type checking purpose
+    stdin: IO[bytes]
+    stdout: IO[bytes]
+
 
 COLOR_T = Literal[
     "white", 
@@ -71,6 +78,24 @@ class Server:
         - command_interface: method to pass command to minecraft server
         """
         self._cmd = cmd_interface
+        self._proc: MCPopen         # minecraft process
+    
+    @property
+    def proc(self):
+        if hasattr(self, '_proc'):
+            return self._proc
+        else:
+            raise Exception("mc server not started.")
+
+    def startMCServer(self):
+        self._proc = MCPopen(config()["entry"].split(" "), stdout = PIPE, stdin = PIPE, stderr = STDOUT)
+    
+    def stopMCServer(self):
+        # send command to minecraft server to stop gracefully
+        self.proc.stdin.write(b"stop\n")
+        self.proc.stdin.flush()
+        self.proc.wait()
+        print("Stopped minecraft server.")
 
     @property
     def cmd(self) -> Callable[[str], Any]:

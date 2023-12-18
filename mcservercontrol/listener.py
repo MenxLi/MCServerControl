@@ -1,5 +1,4 @@
 import re
-from warnings import warn
 from typing import List
 
 from .listenerBase import *
@@ -9,15 +8,15 @@ from . import globalVar; globalVar.init()
 class EventListener(EventListenerBase):
 
     def listen(self):
-        while self.proc.poll() is None:
+        while self.mc_server.proc.poll() is None:
             # Log listening loop
-            output = self.proc.stdout.readline()
+            output = self.mc_server.proc.stdout.readline()
             if output:
                 self.parse(output.decode("utf-8"))
 
-        self.proc.stdout.close()
-        self.proc.stdin.close()
-        exit(self.proc.poll())
+        self.mc_server.proc.stdout.close()
+        self.mc_server.proc.stdin.close()
+        exit(self.mc_server.proc.poll())
 
     def parse(self, line: str):
         line_split = self._splitLogLineBySB(line)
