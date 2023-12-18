@@ -151,26 +151,32 @@ class Server:
         self.cmd("/save-all flush")
 
         backup_home = os.path.join(config()["server_dir"], "backups")
-        new_backup_file = os.path.join(backup_home, f"{config()['world_name']}_{time.strftime('%Y-%m-%d_%H-%M-%S')}.zip")
-
         if not os.path.exists(backup_home):
             os.mkdir(backup_home)
+
+        def _saveThread():
+            time.sleep(3)   # wait for the server to save
+            new_backup_file = os.path.join(backup_home, f"{config()['world_name']}_{time.strftime('%Y-%m-%d_%H-%M-%S')}.zip")
+
+            # zip the world
+            os.system(f"zip -r {new_backup_file} {world_dir}")
+
+            # make a link of the latest backup
+            latest_backup_link = os.path.join(backup_home, f"{config()['world_name']}_latest.zip")
+            if os.path.exists(latest_backup_link):
+                os.remove(latest_backup_link)
+            os.symlink(new_backup_file, latest_backup_link)
+
+            # remove old backups if there are too many
+            if remove_more_than:
+                backups = [ f for f in os.listdir(backup_home) if f.startswith(config()["world_name"]) and f.endswith(".zip") ]
+                backups.remove(f"{config()['world_name']}_latest.zip")
+                backups.sort()
+                if len(backups) > remove_more_than:
+                    print("removing old backups...")
+                    for f in backups[:len(backups)-remove_more_than]:
+                        os.remove(os.path.join(backup_home, f))
+            
+            self.cmd("/say Saved to: {}".format(new_backup_file.split('/')[-1]))
         
-        # zip the world
-        os.system(f"zip -r {new_backup_file} {world_dir}")
-
-        # make a link of the latest backup
-        latest_backup_link = os.path.join(backup_home, f"{config()['world_name']}_latest.zip")
-        if os.path.exists(latest_backup_link):
-            os.remove(latest_backup_link)
-        os.symlink(new_backup_file, latest_backup_link)
-
-        # remove old backups if there are too many
-        if remove_more_than:
-            backups = [ f for f in os.listdir(backup_home) if f.startswith(config()["world_name"]) ]
-            backups.remove(f"{config()['world_name']}_latest.zip")
-            backups.sort()
-            if len(backups) > remove_more_than:
-                print("removing old backups...")
-                for f in backups[:len(backups)-remove_more_than]:
-                    os.remove(os.path.join(backup_home, f))
+        Thread(target=_saveThread, daemon=True).start()
