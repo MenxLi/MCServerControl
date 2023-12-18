@@ -2,7 +2,7 @@
 An abstraction of the minecraft server actions
 """
 
-from typing import Any, Callable, Literal, Tuple, NewType
+from typing import Any, Callable, Literal, Tuple, NewType, Optional
 import time, random, os
 from threading import Thread
 import uuid
@@ -139,11 +139,38 @@ class Server:
     def say(self, text: str):
         self.cmd(f"/say {text}")
 
-    def saveWorld(self):
-        """Make a backup of the world"""
+    def backupWorld(self, remove_more_than: Optional[int] = None):
+        """
+        Make a backup of the world
+        - remove_more_than: if not None, remove old backups if there are more than this number
+        """
         world_dir = os.path.join(config()["server_dir"], config()["world_name"])
         if not os.path.exists(world_dir):
             self.cmd("/say saving faild, world (name:{}) not exists".format(config()["world_name"]))
             return
-        self.cmd("/say Saving the world...")
         self.cmd("/save-all flush")
+
+        backup_home = os.path.join(config()["server_dir"], "backups")
+        new_backup_file = os.path.join(backup_home, f"{config()['world_name']}_{time.strftime('%Y-%m-%d_%H-%M-%S')}.zip")
+
+        if not os.path.exists(backup_home):
+            os.mkdir(backup_home)
+        
+        # zip the world
+        os.system(f"zip -r {new_backup_file} {world_dir}")
+
+        # make a link of the latest backup
+        latest_backup_link = os.path.join(backup_home, f"{config()['world_name']}_latest.zip")
+        if os.path.exists(latest_backup_link):
+            os.remove(latest_backup_link)
+        os.symlink(new_backup_file, latest_backup_link)
+
+        # remove old backups if there are too many
+        if remove_more_than:
+            backups = [ f for f in os.listdir(backup_home) if f.startswith(config()["world_name"]) ]
+            backups.remove(f"{config()['world_name']}_latest.zip")
+            backups.sort()
+            if len(backups) > remove_more_than:
+                print("removing old backups...")
+                for f in backups[:len(backups)-remove_more_than]:
+                    os.remove(os.path.join(backup_home, f))

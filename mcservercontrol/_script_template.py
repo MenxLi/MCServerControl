@@ -14,13 +14,15 @@ if __name__ == "__main__":
     from mcservercontrol.addons.onlineControl import CommandOnlineTime
     from mcservercontrol.addons.killItem import CommandKillItem
     from mcservercontrol.addons.teleportPlayer import CommandTeleportPlayer
+    from mcservercontrol.addons.save import CommandBackup
     obs = [
         WelcomeObserver(),
         GoodbyeObserver(),
         CommandSuicide("suicide"),
         CommandOnlineTime("online-time", alias=["ot"]),
         CommandKillItem("kill-item", alias=["ki"]),
-        CommandTeleportPlayer("teleport-player", alias=["tpp"])
+        CommandTeleportPlayer("teleport-player", alias=["tpp"]),
+        CommandBackup("backup"),
     ]
     # register them to the listener
     listener.register(*obs)
