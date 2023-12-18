@@ -154,9 +154,12 @@ class EventListenerBase:
             assert "cmd_split" in event
             entry = event["cmd_split"][0]
             if entry in self.player_command_observers.keys():
-                self.player_command_observers[entry].onTriggered(
-                    event["player"], event["cmd_split"][1]
-                )
+                try:
+                    self.player_command_observers[entry].onTriggered(
+                        event["player"], event["cmd_split"][1]
+                    )
+                except Exception as e:
+                    print("Error on command: {}".format(e))
             else:
                 self.daemon.server.tellraw(
                     target = event["player"],

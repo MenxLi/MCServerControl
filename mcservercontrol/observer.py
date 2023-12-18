@@ -74,6 +74,7 @@ class PlayerCommandObserver(PlayerObserver, ABC):
             color = "red"
         )
         self.showHelp(player, "yellow")
+        raise Exception("Invalid command arguments!")
 
 
 class DaemonObserver(Observer):

@@ -4,7 +4,7 @@ An abstraction of the minecraft server actions
 
 from typing import Any, Callable, Literal, Tuple, NewType, Optional, IO
 from subprocess import Popen, PIPE, STDOUT
-import time, random, os
+import time, random, os, shutil, zipfile
 from threading import Thread
 import uuid
 from . import globalVar
@@ -164,6 +164,13 @@ class Server:
 
     def say(self, text: str):
         self.cmd(f"/say {text}")
+    
+    @property
+    def backup_home(self):
+        backup_home = os.path.join(config()["server_dir"], "backups")
+        if not os.path.exists(backup_home):
+            os.mkdir(backup_home)
+        return backup_home
 
     def backupWorld(self, remove_more_than: Optional[int] = None):
         """
@@ -174,35 +181,40 @@ class Server:
         if not os.path.exists(world_dir):
             self.cmd("/say saving faild, world (name:{}) not exists".format(config()["world_name"]))
             return
-        backup_home = os.path.join(config()["server_dir"], "backups")
-        if not os.path.exists(backup_home):
-            os.mkdir(backup_home)
 
         __saved_flag = False
         def _backupworld():
             nonlocal __saved_flag
-            new_backup_file = os.path.join(backup_home, f"{config()['world_name']}_{time.strftime('%Y-%m-%d_%H-%M-%S')}.zip")
+            time_stamp = time.strftime('%Y-%m-%d_%H-%M-%S') 
+            new_backup_file = os.path.join(self.backup_home, f"{config()['world_name']}_{time_stamp}.zip")
 
             # zip the world
-            os.system(f"zip -r {new_backup_file} {world_dir}")
+            def __pack(directory, zip_filename):
+                with zipfile.ZipFile(zip_filename, "w") as zipf:
+                    for root, _, files in os.walk(directory):
+                        for file in files:
+                            file_path = os.path.join(root, file)
+                            zipf.write(file_path, arcname=os.path.relpath(file_path, directory))
+            __pack(config()["world_dir"], new_backup_file)
+
 
             # make a link of the latest backup
-            latest_backup_link = os.path.join(backup_home, f"{config()['world_name']}_latest.zip")
+            latest_backup_link = os.path.join(self.backup_home, f"{config()['world_name']}_latest.zip")
             if os.path.exists(latest_backup_link):
                 os.remove(latest_backup_link)
             os.symlink(new_backup_file, latest_backup_link)
 
             # remove old backups if there are too many
             if remove_more_than:
-                backups = [ f for f in os.listdir(backup_home) if f.startswith(config()["world_name"]) and f.endswith(".zip") ]
+                backups = [ f for f in os.listdir(self.backup_home) if f.startswith(config()["world_name"]) and f.endswith(".zip") ]
                 backups.remove(f"{config()['world_name']}_latest.zip")
                 backups.sort()
                 if len(backups) > remove_more_than:
                     print("removing old backups...")
                     for f in backups[:len(backups)-remove_more_than]:
-                        os.remove(os.path.join(backup_home, f))
+                        os.remove(os.path.join(self.backup_home, f))
             
-            self.cmd("/say Saved to: {}".format(new_backup_file.split('/')[-1]))
+            self.cmd("/say Saved to: {}".format(time_stamp))
 
             # clean up
             self.onWorldSaveCallback = lambda: None
@@ -218,3 +230,25 @@ class Server:
         self.onWorldSaveCallback = _backupworld
         self.cmd("/save-all flush")
         Thread(target=_unloadbackupIfTimeout, daemon=True)
+    
+    def listBackups(self) -> list[str]:
+        res = [ f[len(config()["world_name"]) + 1:-4] for f in os.listdir(self.backup_home) if f.startswith(config()["world_name"]) and f.endswith('.zip') ]
+        res.sort()
+        return res
+    
+    def loadBackup(self, backup_name: str):
+        backup_file = os.path.join(self.backup_home, config()["world_name"] + "_" + backup_name + ".zip")
+        if not os.path.exists(backup_file):
+            raise FileNotFoundError("Backup file not found")
+        
+        self.stopMCServer()
+        world_dir = config()['world_dir']
+
+        shutil.rmtree(world_dir)
+        print("Deleted old world")
+
+        with zipfile.ZipFile(backup_file, 'r') as zipref:
+            zipref.extractall(path=world_dir)
+        print("Extacted backup to ", world_dir)
+        
+        self.startMCServer()
