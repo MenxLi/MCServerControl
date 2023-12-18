@@ -192,12 +192,11 @@ class EventListenerBase:
         # Catch KeyboardInterruption
         def stop_handler(signum, frame):
             print("Stopping gracefully...")
-            # send command to minecraft server to stop gracefully
-            self.proc.stdin.write(b"stop\n")
-            self.proc.stdin.flush()
             try:
-                self.proc.terminate()
+                self.stopMCServer()
                 broadcast_proc.terminate()
+                broadcast_proc.join()
+
             except Exception as e:
                 print("Error: {}".format(e))
             
@@ -207,6 +206,13 @@ class EventListenerBase:
         # Start daemon observer
         self.daemon = DaemonObserver()
         self.daemon.start()
+    
+    def stopMCServer(self):
+        # send command to minecraft server to stop gracefully
+        self.proc.stdin.write(b"stop\n")
+        self.proc.stdin.flush()
+        self.proc.wait()
+        print("Stopped minecraft server.")
 
     @abstractmethod
     def listen(self):
