@@ -13,6 +13,7 @@ class CONF_T(TypedDict):
     entry: str
     world_name: str
     broadcast_port: int
+    max_backup: int
 
     # Entries inferred from config file
     world_dir: str              # /server_dir/world_name

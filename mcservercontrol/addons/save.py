@@ -1,5 +1,6 @@
 from typing import List
 from mcservercontrol.player import Player
+from mcservercontrol.configReader import config
 from .. import PlayerCommandObserver
 
 class CommandBackup(PlayerCommandObserver):
@@ -13,7 +14,7 @@ class CommandBackup(PlayerCommandObserver):
 
         if cmd == "now":
             self.server.say("Backup the world (by - {})".format(player.name))
-            self.server.backupWorld(remove_more_than=50)
+            self.server.backupWorld(remove_more_than=config()["max_backup"])
         
         elif cmd == "list":
             to_tell = "List of backups for this world: \n"

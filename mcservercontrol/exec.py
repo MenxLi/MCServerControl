@@ -10,6 +10,7 @@ def init():
                 "entry": "java -Xmx1024M -Xms1024M -jar server.jar nogui",
                 "world_name": "world",
                 "broadcast_port": 25566,
+                "max_backup": 16
             }
             json.dump(_default_conf, fp, indent=1)
         print("Generated default configuration file at: ", CONF_PATH)

@@ -172,7 +172,7 @@ class Server:
             os.mkdir(backup_home)
         return backup_home
 
-    def backupWorld(self, remove_more_than: Optional[int] = None):
+    def backupWorld(self, remove_more_than: Optional[int] = None, save_timeout = 10):
         """
         Make a backup of the world
         - remove_more_than: if not None, remove old backups if there are more than this number
@@ -221,10 +221,10 @@ class Server:
             __saved_flag = True
 
         def _unloadbackupIfTimeout():
-            time.sleep(10)
+            time.sleep(save_timeout)
             if not __saved_flag:
                 self.onWorldSaveCallback = lambda: None
-                self.cmd("/say Failed to save.")
+                self.cmd("/say Failed to save due to saving timeout.")
         
         # watch for next saved event (maximum wait for 10s), then do backup:
         self.onWorldSaveCallback = _backupworld
