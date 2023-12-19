@@ -131,7 +131,7 @@ class InfoHandler(tornado.web.RequestHandler, RequestHandlerBase):
                 }
 
                 // Query reload
-                const QUERY_INTERVAL = 7500;
+                const QUERY_INTERVAL = 10000;
                 const MAX_QUERY = parseInt(3600000 / QUERY_INTERVAL);      // 1 hour
                 let QUERY_COUNTER = 0;
 
