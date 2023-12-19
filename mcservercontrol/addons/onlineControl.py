@@ -60,9 +60,9 @@ class CommandOnlineTime(PlayerCommandObserver):
             "Show online time",
             "Usage: online-time [warn on/off] | [clear]",
             "Examples: ",
-            "\t{} : show online time".format(self.entry),
-            "\t{} warn off : disable addiction warning".format(self.entry),
-            "\t{} clear : clear online time record before this login".format(self.entry),
+            " - {} : show online time".format(self.entry),
+            " - {} warn off : disable addiction warning".format(self.entry),
+            " - {} clear : clear online time record before this login".format(self.entry),
         ]
         return "\n".join(to_show)
 

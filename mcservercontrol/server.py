@@ -159,7 +159,7 @@ class Server:
         self.cmd(f'/title {target.name} clear')
 
     def tellraw(self, target: Player, text: str, color: COLOR_T = "white"):
-        text = text.replace("\n", "\\n")
+        text = text.replace("\n", "\\n").replace('\t', "\\t")
         self.cmd(f'/tellraw {target.name} {{"text": "{text}", "color": "{self._mapColor(color)}"}}')
 
     def say(self, text: str):

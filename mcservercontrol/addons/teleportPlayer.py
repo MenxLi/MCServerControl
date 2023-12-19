@@ -54,7 +54,7 @@ class CommandTeleportPlayer(PlayerCommandObserver):
         to_show = [
             "Teleport yourself to another player",
             "Example: ", 
-            "\t {} Alex : Teleport yourself to Alex".format(self.entry),
-            "\t {} A : Teleport yourself to Alex - Alex will be inferred out of A".format(self.entry)
+            " - {} Alex : Teleport yourself to Alex".format(self.entry),
+            " - {} A : Teleport yourself to Alex - Alex will be inferred out of A".format(self.entry)
         ]
         return "\n".join(to_show)

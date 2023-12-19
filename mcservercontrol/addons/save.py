@@ -32,10 +32,10 @@ class CommandBackup(PlayerCommandObserver):
     def help(self) -> str:
         to_show = [
             "Save the world, and make a backup. ", 
-            f"Usage: {self.entry} [now/list/rollback]"
+            f"Usage: {self.entry} [now] | [list] | [rollback <backup_name>]"
             "Examples: ",
-            f" - /{self.entry} now",
-            f" - /{self.entry} list",
-            f" - /{self.entry} rollback [backup_name]"
+            f" - {self.entry} now",
+            f" - {self.entry} list",
+            f" - {self.entry} rollback <backup_name>"
         ]
         return "\n".join(to_show)

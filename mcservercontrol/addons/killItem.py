@@ -76,8 +76,8 @@ class CommandKillItem(PlayerCommandObserver):
             "Use now to kill items instantly",
             "Use stop to stop scheduled kill item commands",
             "Examples: ",
-            "\t {} now : Kill item instantly".format(self.entry),
-            "\t {} 30 : Kill item in 30s".format(self.entry),
-            "\t {} stop : Stop scheduled kill-item".format(self.entry),
+            " - {} now : Kill item instantly".format(self.entry),
+            " - {} 30 : Kill item in 30s".format(self.entry),
+            " - {} stop : Stop scheduled kill-item".format(self.entry),
         ]
         return "\n".join(to_show)
