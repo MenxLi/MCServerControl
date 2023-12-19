@@ -41,14 +41,16 @@ The configuation file is as follows:
     "world_name": "world",
 
     // The server log will be broadcast to http://localhost:<port>/info/log
-    "broadcast_port": 25566
+    "broadcast_port": 25566, 
+
+    // Max number of backups, the older will be deleted
+    "max_backup": 16,
 }
 ```
 
 ## Development
 
-The implementation is object-oriented and strongly typed, making it friendly and easy to use.  
-You can define your own logic with the APIs.
+Define the logic with the APIs for your own addons.
 
 To get started, you can inherite from `observer.PlayerObserver` and `observer.PlayerCommandObserver`, then register them to the minecraft server listener:
 
