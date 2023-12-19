@@ -14,9 +14,10 @@ def init():
             json.dump(_default_conf, fp, indent=1)
         print("Generated default configuration file at: ", CONF_PATH)
     
+    template_dir = os.path.join(os.path.dirname(__file__), 'template')
     if not os.path.exists(EXEC_PATH):
         shutil.copyfile(
-            os.path.join(os.path.dirname(__file__), '_script_template.py'),
+            os.path.join(template_dir, '__main__.py'),
             EXEC_PATH, 
         )
         print("Generated script file.")
