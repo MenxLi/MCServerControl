@@ -52,6 +52,7 @@ _version_histories = [
     ("0.1.2", "Record scheduled task globally; showHelp method; warn invalid command; addons"), 
     ("0.1.3", "Added mcservercontrol world config directory; persistent player status"), 
     ("0.1.4", "Use mcservercontrol.json at cwd as configuration file; use python module"),
+    ("0.1.5", "Backup control and refactors"),
 ]
 
 VERSION, UPDATE_NOTE = _version_histories[-1]
